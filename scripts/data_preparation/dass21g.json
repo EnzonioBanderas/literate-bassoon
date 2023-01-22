@@ -1,0 +1,374 @@
+{
+    "MeasurementToolMetadata": {
+        "Description": "Short version of the Depression Anxciety Stress Scale in German (DASS-21-G)"
+    },
+    "dass21label_depression": {
+        "Description": "DASS-21 depression score label",
+        "Derivative": true,
+        "Levels": {
+            "normal": "DASS-21 depression score of 0 to 9",
+            "mild": "DASS-21 depression score of 10 to 13",
+            "moderate": "DASS-21 depression score of 14 to 20",
+            "severe": "DASS-21 depression score of 21 to 27",
+            "extremely_severe": "DASS-21 depression score of 28 to 42"
+        }
+    },
+    "dass21label_anxiety": {
+        "Description": "DASS-21 anxiety score label",
+        "Derivative": true,
+        "Levels": {
+            "normal": "DASS-21 anxiety score of 0 to 7",
+            "mild": "DASS-21 anxiety score of 8 to 9",
+            "moderate": "DASS-21 anxiety score of 10 to 14",
+            "severe": "DASS-21 anxiety score of 15 to 19",
+            "extremely_severe": "DASS-21 anxiety score of 20 to 42"
+        }
+    },
+    "dass21label_stress": {
+        "Description": "DASS-21 stress score label",
+        "Derivative": true,
+        "Levels": {
+            "normal": "DASS-21 stress score of 0 to 14",
+            "mild": "DASS-21 stress score of 15 to 18",
+            "moderate": "DASS-21 stress score of 19 to 25",
+            "severe": "DASS-21 stress score of 26 to 33",
+            "extremely_severe": "DASS-21 stress score of 34 to 42"
+        }
+    },
+    "dass21score_depression": {
+        "Description": "DASS-21 depression score (2 x sum of d-questions)",
+        "Derivative": true,
+        "Levels": {
+            "0": "normal",
+            "1": "normal",
+            "2": "normal",
+            "3": "normal",
+            "4": "normal",
+            "5": "normal",
+            "6": "normal",
+            "7": "normal",
+            "8": "normal",
+            "9": "normal",
+            "10": "mild",
+            "11": "mild",
+            "12": "mild",
+            "13": "mild",
+            "14": "moderate",
+            "15": "moderate",
+            "16": "moderate",
+            "17": "moderate",
+            "18": "moderate",
+            "19": "moderate",
+            "20": "moderate",
+            "21": "severe",
+            "22": "severe",
+            "23": "severe",
+            "24": "severe",
+            "25": "severe",
+            "26": "severe",
+            "27": "severe",
+            "28": "extremely severe",
+            "29": "extremely severe",
+            "30": "extremely severe",
+            "31": "extremely severe",
+            "32": "extremely severe",
+            "33": "extremely severe",
+            "34": "extremely severe",
+            "35": "extremely severe",
+            "36": "extremely severe",
+            "37": "extremely severe",
+            "38": "extremely severe",
+            "39": "extremely severe",
+            "40": "extremely severe",
+            "41": "extremely severe",
+            "42": "extremely severe"
+        }
+    },
+    "dass21score_anxiety": {
+        "Description": "DASS-21 anxiety score (2 x sum of a-questions)",
+        "Derivative": true,
+        "Levels": {
+            "0": "normal",
+            "1": "normal",
+            "2": "normal",
+            "3": "normal",
+            "4": "normal",
+            "5": "normal",
+            "6": "normal",
+            "7": "normal",
+            "8": "mild",
+            "9": "mild",
+            "10": "moderate",
+            "11": "moderate",
+            "12": "moderate",
+            "13": "moderate",
+            "14": "moderate",
+            "15": "severe",
+            "16": "severe",
+            "17": "severe",
+            "18": "severe",
+            "19": "severe",
+            "20": "extremely severe",
+            "21": "extremely severe",
+            "22": "extremely severe",
+            "23": "extremely severe",
+            "24": "extremely severe",
+            "25": "extremely severe",
+            "26": "extremely severe",
+            "27": "extremely severe",
+            "28": "extremely severe",
+            "29": "extremely severe",
+            "30": "extremely severe",
+            "31": "extremely severe",
+            "32": "extremely severe",
+            "33": "extremely severe",
+            "34": "extremely severe",
+            "35": "extremely severe",
+            "36": "extremely severe",
+            "37": "extremely severe",
+            "38": "extremely severe",
+            "39": "extremely severe",
+            "40": "extremely severe",
+            "41": "extremely severe",
+            "42": "extremely severe"
+        }
+    },
+    "dass21score_stress": {
+        "Description": "DASS-21 stress score (2 x sum of s-questions)",
+        "Derivative": true,
+        "Levels": {
+            "0": "normal",
+            "1": "normal",
+            "2": "normal",
+            "3": "normal",
+            "4": "normal",
+            "5": "normal",
+            "6": "normal",
+            "7": "normal",
+            "8": "normal",
+            "9": "normal",
+            "10": "normal",
+            "11": "normal",
+            "12": "normal",
+            "13": "normal",
+            "14": "normal",
+            "15": "mild",
+            "16": "mild",
+            "17": "mild",
+            "18": "mild",
+            "19": "moderate",
+            "20": "moderate",
+            "21": "moderate",
+            "22": "moderate",
+            "23": "moderate",
+            "24": "moderate",
+            "25": "moderate",
+            "26": "severe",
+            "27": "severe",
+            "28": "severe",
+            "29": "severe",
+            "30": "severe",
+            "31": "severe",
+            "32": "severe",
+            "33": "severe",
+            "34": "extremely severe",
+            "35": "extremely severe",
+            "36": "extremely severe",
+            "37": "extremely severe",
+            "38": "extremely severe",
+            "39": "extremely severe",
+            "40": "extremely severe",
+            "41": "extremely severe",
+            "42": "extremely severe"
+        }
+    },
+    "dass21q01_s": {
+        "Description": "1. Ich fand es schwer, mich zu beruhigen [I found it hard to wind down]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q02_a": {
+        "Description": "2. Ich spuerte, dass mein Mund trocken war [I was aware of dryness of my mouth]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q03_d": {
+        "Description": "3. Ich konnte ueberhaupt keine positiven Gefuehle erleben [I couldn't seem to experience any positive feeling at all]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q04_a": {
+        "Description": "4. Ich hatte Atemprobleme (z.B. uebermaessig schnelles Atmen, Atemlosigkeit ohne koerperliche Anstrengung) [I experienced breathing difficulty (e.g.excessively rapid breathing, breathlessness in the absence of physical exertion)]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q05_d": {
+        "Description": "5. Es fiel mir schwer, die Initiative aufzubringen, Dinge zu tun  [I found it difficult to work up the initiative to do things]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q06_s": {
+        "Description": "6. Ich tendierte dazu, auf Situationen ueberzureagieren  [I tended to over-react to situations]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q07_a": {
+        "Description": "7. Ich zitterte (z.B. an den Haenden) [I experienced trembling (e.g.in the hands)]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q08_s": {
+        "Description": "8. Ich fuehlte, dass ich eine Menge Nervenkraft verbrauchte [I felt that I was using a lot of nervous energy]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q09_a": {
+        "Description": "9. Ich machte mir Sorgen ueber Situationen, in denen ich in Panik geraten und mich zum Trottel machen koennte [I was worried aboutsituations in which I might panic and make a fool of myself]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q10_d": {
+        "Description": "10. Ich hatte das Gefuehl, nichts zu haben, auf das ich mich freuen konnte [I felt that I had nothing to look forward to]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q11_s": {
+        "Description": "11. Ich bemerkte, dass ich unruhig wurde [I found myself getting agitated]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q12_s": {
+        "Description": "12. Ich fand es schwierig, mich zu entspannen [I found it difficult to relax]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q13_d": {
+        "Description": "13. Ich fuehlte mich niedergeschlagen und traurig [I felt down-hearted and blue]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q14_s": {
+        "Description": "14. Ich konnte nichts ertragen, das mich davon abhielt, in meiner Taetigkeit fortzufahren [I was intolerant of anything that kept me from getting on with what I was doing]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q15_a": {
+        "Description": "15. Ich fuehlte mich einer Panik nahe [I felt I was close to panic]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q16_d": {
+        "Description": "16. Ich war nicht in der Lage, mich fuer irgendetwas zu begeistern [I was unable to become enthusiastic about anything]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q17_d": {
+        "Description": "17. Ich fuehlte mich als Person nicht viel wert [I felt I wasn't worth much as a person]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q18_s": {
+        "Description": "18. Ich fand mich ziemlich empfindlich [I felt that I was rather touchy]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q19_a": {
+        "Description": "19. Ich war mir ueber meinen Herzschlag bewusst, ohne dass ich mich koerperlich angestrengt hatte [I was aware of the action of my heart in the absence of physical exertion (e.g. sense of heart rate increase, heart missing a beat)]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q20_a": {
+        "Description": "20. Ich fuehlte mich grundlos aengstlich [I felt scared without any good reason]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    },
+    "dass21q21_d": {
+        "Description": "21. Ich empfand das Leben als sinnlos [I felt that life was meaningless]",
+        "Levels": {
+            "0": "Traf gar nicht auf mich zu [Did not apply to me at all]",
+            "1": "Traf manchmal auf mich zu, oder zu einem gewissen Grad [Applied to me to some degree, or some of the time]",
+            "2": "Traf in betraechtlichem Masse auf mich zu, oder ziemlich oft [Applied to me to a considerable degree or a good part of time]",
+            "3": "Traf sehr stark auf mich zu, oder die meiste Zeit [Applied to me very much or most of the time]"
+        }
+    }
+}

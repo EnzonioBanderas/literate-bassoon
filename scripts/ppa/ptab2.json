@@ -1,0 +1,26 @@
+{
+  "sex": {
+    "Description": "participant sex",
+    "Levels": {
+      "m": "male",
+      "f": "female",
+      "o": "other"
+    }
+  },
+  "age": {
+    "Description": "participant age at first MRI session",
+    "Units": "years"
+  },
+  "cs_plus": {
+    "Description": "participant sex",
+    "Levels": {
+      "m": "male",
+      "f": "female",
+      "o": "other"
+    }
+  },
+  "stim_intensity": {
+    "Description": "current of US applied (4 pulse DC stimulation train in 33 ms spacing, pulse duration 0.5 µs, max voltage 400V)",
+    "Units": "mA"
+  }
+}

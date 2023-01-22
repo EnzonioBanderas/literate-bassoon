@@ -1,0 +1,10 @@
+fp_d  = '/media/diskEvaluation/Evaluation/sfb1280a05study7/dumpHereForSorting/rawdata';
+fp_de = '/media/diskEvaluation/Evaluation/sfb1280a05study7/dumpHereForSorting/discarded';
+
+fl = essbids_listFiles(fullfile(fp_d,'**','anat','sub-*UNIT1*.nii.gz'));
+for i=1:numel(fl)
+  fp = fileparts(fl{i});
+  fl = essbids_listFiles(fullfile(fp,'sub-*.nii.gz'));
+  fl = fl(not(ismember(fl,fl{i})));
+  essbids_defaceAnatomicalVolume(fl{i},fl,fp_de);
+end

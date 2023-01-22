@@ -1,0 +1,35 @@
+{
+  "participant_id": {
+    "Description": "Participant id Description"
+  },
+  "sfb1280_id": {
+    "Description": "Sfb1280 ID description"
+  },
+  "cs_plus": {
+    "Description": "CS Plus Description",
+    "Levels": {
+      "diamond": "shows diamond",
+      "square": "shows square"
+    }
+  },
+  "stim_intensity": {
+    "Description": "Stim Description",
+    "Units": "mA"
+  },
+  "age": {
+    "Description": "placeholder age",
+    "Units": "years"
+  },
+  "sex": {
+    "Description": "sex placeholder",
+    "Levels": {
+      "m": "male",
+      "f": "female",
+      "o": "other"
+    }
+  },
+  "stim_intensity_Patricktab": {
+    "Description": "Stim Description",
+    "Units": "mA"
+  }
+}

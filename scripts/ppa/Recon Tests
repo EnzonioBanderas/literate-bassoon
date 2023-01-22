@@ -1,0 +1,88 @@
+﻿MatlabR2019a + Current Motion Correction
+...Now doing GRAPPA on each 'slice' in the readout direction…
+
+Warning: A worker aborted during execution of the parfor loop. The parfor loop will now run again on
+the remaining workers. 
+> In distcomp.remoteparfor/handleIntervalErrorResult (line 240)
+  In distcomp.remoteparfor/getCompleteIntervals (line 387)
+  In parallel_function>distributed_execution (line 745)
+  In parallel_function (line 577)
+  In performHostGRAPPArecon_toDisk (line 257)
+  In reconstructSiemensVolume (line 405)
+  In reconstructSiemensMP2RAGEwithFatNavs (line 400)
+  In test_script_startReconstructions (line 86) 
+Error using parallel.internal.getJavaFutureResult (line 33)
+No workers from the parallel pool were available for remote execution after waiting 60 seconds. This
+could be because a previous SPMD block or PARFOR loop failed to complete correctly and was interrupted,
+or because at least one worker is busy executing a PARFEVAL. If this problem persists, you may need to
+restart the parallel pool.
+
+Error in parallel.internal.getJavaFutureInterruptibly (line 36)
+        future, 1, java.util.concurrent.TimeUnit.SECONDS);
+
+Error in distcomp.remoteparfor/buildParforController (line 122)
+                p = parallel.internal.getJavaFutureInterruptibly(...
+
+Error in distcomp.remoteparfor/rebuildParforController (line 189)
+                obj.buildParforController();
+
+Error in distcomp.remoteparfor/handleIntervalErrorResult (line 253)
+                obj.rebuildParforController();
+
+Error in distcomp.remoteparfor/getCompleteIntervals (line 387)
+                            [r, err] = obj.handleIntervalErrorResult(r);
+
+Error in performHostGRAPPArecon_toDisk (line 257)
+parfor iS = 1:nread
+
+Error in reconstructSiemensVolume (line 405)
+        [timingReport_hostRecon, tempNameRoots] =
+        performHostGRAPPArecon_toDisk(twix_obj,tempDir,struct('iAve',reconPars.iAve,'iRep',reconPars.iRep));
+
+Error in reconstructSiemensMP2RAGEwithFatNavs (line 400)
+        timingReport = reconstructSiemensVolume(twix_obj,reconPars);
+
+Error in test_script_startReconstructions (line 86)
+    reconstructSiemensMP2RAGEwithFatNavs(fp_recon{1})
+
+Additional observation: Memory went up to 97%, Task Manager froze then the warning appeared about one worker aborting the parfor loop
+
+MatlabR2019a + old Motion Correction
+...Now doing GRAPPA on each 'slice' in the readout direction...
+Warning: A worker aborted during execution of the parfor loop. The parfor loop will now run again on
+the remaining workers. 
+> In distcomp.remoteparfor/handleIntervalErrorResult (line 240)
+  In distcomp.remoteparfor/getCompleteIntervals (line 387)
+  In parallel_function>distributed_execution (line 745)
+  In parallel_function (line 577)
+  In performHostGRAPPArecon_toDisk (line 257)
+  In reconstructSiemensVolume (line 400)
+  In reconstructSiemensMP2RAGEwithFatNavs (line 400)
+  In test_script_startReconstructions (line 100) 
+Error using distcomp.remoteparfor/rebuildParforController (line 217)
+Unexpected failure to indicate all intervals added.
+
+Error in distcomp.remoteparfor/handleIntervalErrorResult (line 253)
+                obj.rebuildParforController();
+
+Error in distcomp.remoteparfor/getCompleteIntervals (line 387)
+                            [r, err] = obj.handleIntervalErrorResult(r);
+
+Error in performHostGRAPPArecon_toDisk (line 257)
+parfor iS = 1:nread
+
+Error in reconstructSiemensVolume (line 400)
+        [timingReport_hostRecon, tempNameRoots] =
+        performHostGRAPPArecon_toDisk(twix_obj,tempDir,struct('iAve',reconPars.iAve,'iRep',reconPars.iRep));
+
+Error in reconstructSiemensMP2RAGEwithFatNavs (line 400)
+        timingReport = reconstructSiemensVolume(twix_obj,reconPars);
+
+Error in test_script_startReconstructions (line 100)
+    reconstructSiemensMP2RAGEwithFatNavs(fp_recon{1})
+ 
+IdleTimeout has been reached.
+Parallel pool using the 'local' profile is shutting down.
+
+Also: Memory went up to 97% before warning showed
+

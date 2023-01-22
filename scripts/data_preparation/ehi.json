@@ -1,0 +1,118 @@
+{
+    "MeasurementToolMetadata": {
+        "Description": "Modified 10-question Edinburgh Handedness Inventory in German, lacking eye and leg questions",
+        "TermURL": "http://www.cognitiveatlas.org/task/id/tsk_4a57abb949a41"
+    },
+    "ehi_lc": {
+        "Description": "Edinburgh Handedness Inventory laterality coefficient, i.e. round(100 * (scoreR - scoreL) / (scoreR + scoreL) )",
+        "Derivative": true
+    },
+    "ehi_scoreR": {
+        "Description": "Edinburgh Handedness Inventory score right i.e. number of 'r' characters + number of 'n' in all responses",
+        "Derivative": true
+    },
+    "ehi_scoreL": {
+        "Description": "Edinburgh Handedness Inventory score right i.e. number of 'r' characters + number of 'n' in all responses",
+        "Derivative": true
+    },
+    "ehi_q01": {
+        "Description": "1. Schreiben [writing]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q02": {
+        "Description": "2. Zeichnen [drawing]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q03": {
+        "Description": "3. Werfen [throwing]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q04": {
+        "Description": "4. Schere [scissors]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q05": {
+        "Description": "5. Zahnbuerste [tooth brush]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q06": {
+        "Description": "6. Messer (ohne Gabel) [knife (without fork)]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q07": {
+        "Description": "7. Loeffel [spoon]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q08": {
+        "Description": "8. Besen (obere Hand) [broom (upper hand)]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q09": {
+        "Description": "9. Dose oeffnen (Deckel) [open can (lid)]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    },
+    "ehi_q10": {
+        "Description": "10. Streichholz anzuenden (Streichholz) [light match (match)]",
+        "Levels": {
+            "ll": "links++ [left++]",
+            "l": "links+ [left+]",
+            "n": "neutral [neutral]",
+            "r": "rechts+ [right+]",
+            "rr": "rechts++ [right++]"
+        }
+    }
+}

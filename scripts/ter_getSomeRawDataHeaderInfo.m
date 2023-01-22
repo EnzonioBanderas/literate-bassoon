@@ -1,0 +1,181 @@
+function [rdhdr,text_hdr,text_bhdr] = ter_getSomeRawDataHeaderInfo(rawdatafile,varargin)
+% TER_GETSOMERAWDATAHEADERINFO
+% 
+% options 'fileout'
+% 
+% 
+
+uimsg = 'Please select raw data (*.dat) or raw data header (*.txt) file';
+uiopt = {'*.dat;*.txt'};
+
+if hex2dec(version('-release')) < hex2dec('2016b')
+  evalc('contains = @(x,y) ~isempty(strfind(x,y))');
+end
+
+if nargin == 0
+  [fname, fpath] = uigetfile(uiopt,uimsg,pwd);
+elseif isempty(rawdatafile)
+  [fname, fpath] = uigetfile(uiopt,uimsg,pwd);
+elseif exist(rawdatafile,'file')
+  [fpath,fname,fext] = fileparts(rawdatafile);
+  if isempty(fpath)
+    fpath = pwd;
+  end
+  fname = [fname fext];
+else
+  error('no valid input')
+end
+if isequal(fname,0)
+  rdhdr = [];
+  warning('no raw data file or raw data header file selected');
+  return
+end
+[~,fname0,fext] = fileparts(fname);
+rdhdr.fname = fullfile(fpath,fname);
+if strcmpi(fext,'.txt')
+  text_hdr = fileread(fullfile(fpath,fname));
+elseif strcmpi(fext,'.dat')
+  fid = fopen(fullfile(fpath,fname),'r');
+  text_hdr  = [];
+  text_bhdr = []; % text before header
+  t         = fgets(fid);
+  isheader  = false;
+  linecount = 1;
+%   while ~isequal(t,-1)
+%     text_hdr = [text_hdr t] ;
+%     t = fgets(fid);
+%     linecount = linecount+1;
+%   end
+  while ~isequal(t,-1)
+    if contains(t,'ASCCONV BEGIN')
+      %contains(t,'ASCCONV BEGIN')
+      %contains(t,'### ASCCONV BEGIN ###')
+      isheader = true;
+      i = strfind(t,'ASCCONV BEGIN');
+      %i = strfind(t,'### ASCCONV BEGIN ###');
+      t = t(i:end);
+    end
+    if isheader
+      text_hdr = [text_hdr t]; %#ok<*AGROW>
+      if contains(t,'tReferenceImage0') &&...
+          exist('StudyDate','var') ~= 1
+        tmp = regexp(t,'.(?<StudDate>\d+)"','names');
+        StudyDate = str2double(tmp.StudDate(1:8));
+      end
+    else
+      text_bhdr = [text_bhdr t];
+      if contains(t,'<ParamString."tPatientName">') && ...
+          exist('PatientName','var') ~= 1
+        tmp = regexp(t,'{ "(?<PatientName>[ \^a-zA-Z0-9\_]+)"  }','names');
+        PatientName = tmp.PatientName;
+        %tmp = strrep(t,'<ParamString."tPatientName">','PatientName = ');
+        %tmp = strrep(tmp,'"','''');
+        %disp(tmp)
+        %eval([tmp ';']);
+        %PatientName = PatientName{1};
+      elseif contains(t,'<ParamString."tProtocolName">') && ...
+          exist('ProtocolName','var') ~= 1
+        tmp = regexp(t,'{ "(?<ProtName>[ \^a-zA-Z0-9\_\.\-]+)"  }','names');
+        ProtocolName = tmp.ProtName;
+        %tmp = strrep(t,'<ParamString."tProtocolName">','ProtocolName = ');
+        %tmp = strrep(tmp,'"','''');
+        %disp(tmp)
+        %eval([tmp ';']);
+      end
+    end
+    if contains(t,'ASCCONV END')
+      break  
+    end
+    
+    t = fgets(fid);
+    linecount = linecount+1;
+  end
+  
+  
+  fclose(fid);
+  if ismember('fileout',varargin)
+    if ismember('pathout',varargin) && ...
+        numel(varargin)>find(ismember(varargin,'pathout'))
+      fp_out = varargin{find(ismember(varargin,'pathout'))+1};
+    else
+      fp_out = fpath;
+    end
+        
+    fname_hdr = fullfile(fp_out,['rawhdr1_' fname0 '.txt']);
+    disp(fname_hdr)
+    fid = fopen(fname_hdr,'w');
+    %text_hdr = strrep(text_hdr,'%','%%');
+    %text_hdr = strrep(text_hdr,'\','\\');
+    fprintf(fid,'%s',text_hdr);
+    fclose(fid);
+    
+    fname_hdr = fullfile(fp_out,['rawhdr0_' fname0 '.txt']);
+    fid = fopen(fname_hdr,'w');
+    %text_bhdr = strrep(text_bhdr,'%','%%');
+    %text_bhdr = strrep(text_bhdr,'\','\\');
+    fprintf(fid,'%s',text_bhdr);
+    fclose(fid);
+  end
+else
+  error('Cannot identify file type to raw data (.dat) or header (.txt)');
+end
+try
+  rdhdr.PatientName  = PatientName;
+catch
+end
+try
+  rdhdr.StudyDate    = StudyDate;
+catch
+end
+try
+  rdhdr.ProtocolName = ProtocolName;
+catch
+end
+clearvars -except text_hdr fpath rdhdr text_bhdr
+
+varlist = {
+  'baseRes'     'sKSpace.lBaseResolution'                 nan;
+  'nLinePE'     'sKSpace.lPhaseEncodingLines'             nan;
+  'nSlices'     'sKSpace.lImagesPerSlab'                  nan;
+  'PosSag'      'sSliceArray.asSlice[0].sPosition.dSag'   0;
+  'PosCor'      'sSliceArray.asSlice[0].sPosition.dCor'   0;
+  'PosTra'      'sSliceArray.asSlice[0].sPosition.dTra'   0;
+  'PosAngleSag' 'sSliceArray.asSlice[0].sNormal.dSag'     0;
+  'PosAngleCor' 'sSliceArray.asSlice[0].sNormal.dCor'     0;
+  'PosAngleTra' 'sSliceArray.asSlice[0].sNormal.dTra'     0;
+  'thickness'   'sSliceArray.asSlice[0].dThickness'       nan;
+  'FOVph'       'sSliceArray.asSlice[0].dPhaseFOV'        nan;
+  'FOVro'       'sSliceArray.asSlice[0].dReadoutFOV'      nan;
+  'TReff'       'sWiPMemBlock.alFree[9]'                  nan;
+  'kz'          'sWiPMemBlock.alFree[18]'                 0;
+  'ky'          'sWiPMemBlock.alFree[19]'                 0;
+  };
+
+ind_nl = strfind(text_hdr,newline);
+for i=1:size(varlist,1)
+  if numel(varlist{i,2}) < 41
+    varlist{i,2} = [varlist{i,2} repmat(' ',1,41-numel(varlist{i,2}))];
+  end
+  if ~strcmpi('= ',varlist{i,2}(end-1:end))
+    varlist{i,2} = [varlist{i,2} '= '];  %#ok<*SAGROW>
+  end
+  ind0    = strfind(text_hdr,varlist{i,2});
+  if isempty(ind0)
+    evalc(sprintf('rdhdr.%s = %d;',varlist{i,1},varlist{i,3}));
+    continue
+  end
+  lineend = ind_nl(find(ind_nl>ind0,1,'first'));
+  value = strrep(text_hdr(ind0:lineend),varlist{i,2},'');
+  evalc(sprintf('rdhdr.%s = %s;',varlist{i,1},value));
+end
+
+
+tmp = regexp(text_bhdr,'FrameOfReference[ ">\{0-9\.]*','match');
+tmp = regexp(tmp{1},'.[0-9]{14}','match');
+dtg = datetime(tmp{1}(2:end),'InputFormat','yyyyMMddHHmmss'); % changed from 'yyyyMMddhhmmss'
+dtg.Format='yyyy-MM-dd''T''HH-mm-ss';
+rdhdr.TimeReferenceFrame = dtg;
+
+clearvars -except text_hdr fpath rdhdr text_bhdr
+
+  

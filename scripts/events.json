@@ -1,0 +1,41 @@
+{
+    "duration":{
+		"LongName": "stimulus duration",
+		"Description": "Duration of the stimulus presentations",
+		"Units": "s"
+	},
+	"trial_type": {
+        "LongName": "Event category",
+        "Description": "Type of stimulus presented",
+        "Levels": {
+            "CSplus": "a visual stimulus that might be followed by an aversive electrical stimulus",
+            "CSminus": "a visual stimulus that will never be followed by an aversive electrical stimulus",
+            "US": "brief aversive electrical stimulation applied to the palm of the left hand"
+        }
+    },
+	"trial_index": {
+    	"LongName": "Trial index",
+        "Description": "Index of the trial presented (trials can contai either just one CS, or one CS and one US)"
+	},
+	"reinforced":{
+    	"LongName": "CS reinforced",
+        "Description": "indicated wether a CS presentation was followed by a US presentation",
+        "Levels": {
+            "0": "not reinforced, i.e., the CS presentation is not followed by a US presentation",
+            "1": "reinforced, i.e., the CS presentation is followd by a US presentation"
+        }
+	},
+    "stim_file": {
+		"LongName": "Stimulus filename",
+		"Description": "Relative path of the stimulus image file",
+		"Levels": {
+        	"images/diamond.png": "a black on gray image of a diamond shape",
+            "images/square.png": "a black on gray image of a square shape, i.e., the diamond shape tilted by 45 degrees",
+        }
+      },
+    "StimulusPresentation": {
+        "OperatingSystem": "Windows 7 64 bit",
+        "SoftwareName": "NeuroBS Presentation",
+        "SoftwareVersion": "21.0 Build 06.06.19"
+    }
+}

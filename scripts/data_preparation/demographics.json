@@ -1,0 +1,219 @@
+{
+    "MeasurementToolMetadata": {
+        "Description": "Demographic questionnaire SFB1280, version 1.1",
+        "TermURL": ""
+    },
+    "age": {
+        "Description": "participant age in years"
+    },
+    "height": {
+        "Description": "body height in cm"
+    },
+    "mass": {
+        "Description": "body mass in kg"
+    },
+    "sex": {
+        "Description": "participant sex",
+        "Levels": {
+            "m": "male",
+            "f": "female",
+            "o": "other"
+        }
+    },
+    "edu_y_total": {
+        "Description": "sum of all education time in years, Q: Welche Schul- und Ausbildungsabschluesse haben Sie und ueber wie viele Jahre haben Sie die entsprechenden Ausbildungseinrichtungen besucht (mehrere Angaben moeglich)? Laufende und noch nicht abgeschlossene Ausbildungen bitte unter 'sonstige' beruecksichtigen. [Which educational degrees did you acquire and how many years did you spend on them (multiple selections possible). Please enter current and not yet finished graduation processes in the section 'other'.]",
+        "Derivative": true
+    },
+    "edu_y_school_es": {
+        "Description": "education time in years spend in German elementary school [Grundschule]"
+    },
+    "edu_y_school_hs": {
+        "Description": "education time in years spend in German secondary modern school [Hauptschule]"
+    },
+    "edu_y_school_rs": {
+        "Description": "education time in years spend in German junior high school [Realschule]"
+    },
+    "edu_y_school_gs": {
+        "Description": "education time in years spend in German grammar school [Gymnasium]"
+    },
+    "edu_y_univ_bach": {
+        "Description": "education time in years spend in university for bachelor level studies"
+    },
+    "edu_y_univ_mast": {
+        "Description": "education time in years spend in university for master/diploma level studies"
+    },
+    "edu_y_univ_phd": {
+        "Description": "education time in years spend in university for PhD level studies"
+    },
+    "edu_y_univ_sdoc": {
+        "Description": "education time in years spend in university for state doctorate studies [Habilitation]"
+    },
+    "edu_y_prof_voc": {
+        "Description": "education time in years spend in German vocational school/training [Ausbildung]"
+    },
+    "edu_y_prof_mas": {
+        "Description": "education time in years spend in German master school [Meisterschule]"
+    },
+    "edu_y_other": {
+        "Description": "education time in years spend in other education"
+    },
+    "fem_menopause": {
+        "Description": "postmenopausal, Y/N; Q: Hat die Menopause bereits stattgefunden? [Did you already experience the menopause?]",
+        "Levels": {
+            "1": "yes",
+            "0": "no"
+        }
+    },
+    "fem_menopause_age": {
+        "Description": "age menopause, years; Q: Falls ja, in welchem Alter hatten Sie Ihre letzte Menstruationsblutung? [If yes, at which age did you experience the final menstruation?]"
+    },
+    "fem_hormcontr": {
+        "Description": "hormonal contraceptive usage, Y/N; Q: Verwenden Sie hormonelle Verhuetungsmittel (z.B. Pille, Hormonspirale, Vaginalring, Depotspritze, Hormonimplantat)? [Do you use hormonalc contraceptive s (e.g. pill, homon spiral, vaginal ring, depot injection, hormon implnat)?]",
+        "Levels": {
+            "1": "yes",
+            "0": "no"
+        }
+    },
+    "fem_hormcontr_med": {
+        "Description": "hormonal contraceptive medication; Q: Falls ja, welche? [If yes, which?]"
+    },
+    "fem_hormcontr_last": {
+        "Description": "last hormonal contraceptiveintake, datetime; Q: Wann haben Sie dieses hormonelle Verhuetungsmittel das letzte Mal eingenommen? [When did you take the hormonal contraceptive the last time?]"
+    },
+    "fem_hormcontr_next": {
+        "Description": "next scheduled hormonal contraceptive intake, datetime; Q: Wann werden Sie dieses hormonelle Verhuetungsmittel das naechste mal einnehmen? [When will you take the hormonal contraceptive the next time?]"
+    },
+    "fem_menstr_last": {
+        "Description": "last mentration date, date; Q: Wann war der erste Tag ihrer letzten Mentruationsblutung? [When was the first day of your last menstrual bleeding?]"
+    },
+    "fem_menstr_next": {
+        "Description": "next mentration date, date; Q: Wann wird der erste Tag ihrer naechsten Menstruationsblutung sein? [When will be the first day of your next menstrual bleeding?]"
+    },
+    "sense_hearing": {
+        "Description": "self reported hearing performance, norm/def; Q: Verfuegen Sie ueber eine normale Hoerfaehigkeit auf beiden Ohren? Sollten Sie ein Hoergeraet tragen, mit dem eventuelle Hoerschwaechen ausgeglichen werden, kreuzen Sie bitte 'ja'an. [Do you have normal hearing capacity on both ears? If you have a hearing aid compensating hearing weekness, please select 'yes'.]",
+        "Levels": {
+            "0": "deficient hearing",
+            "1": "normal hearing"
+        }
+    },
+    "sense_hearing_aid": {
+        "Description": "self reported hearing aid use; Q: Falls nein, tragen Sie ein Hoergeraet, mit dem die Hoerschwaechen ausgeglichen wird? [If not, do you wear a hearing aid compensating the hearing weekness.]",
+        "Levels": {
+            "0": "does not use hearing aid",
+            "1": "uses hearing aid"
+        }
+    },
+    "sense_eyesight": {
+        "Description": "self reported eyesight performance, norm/def; Q: Verfuegen Sie ueber eine normale Sehfaehigkeit auf beiden Augen? [Do you have normal eyesight on both eyes?]",
+        "Levels": {
+            "0": "deficient eyesight",
+            "1": "normal eyesight"
+        }
+    },
+    "sense_eyesight_aid": {
+        "Description": "self reported seeing aid use, norm/def; Q: Wenn nein, tragen Sie eine Brille, mit der die Sehschwaechen ausgeglichen wird. [If not, do you use a seeing aid compensating eyesight weekness?]",
+        "Levels": {
+            "0": "does not use seeing aid",
+            "1": "uses seeing aid"
+        }
+    },
+    "sense_eyesight_deficit": {
+        "Description": "self reported eyesight deficit, short-sighted/long-sighted; Q: Falls ja, sind Sie kurzsuchtig oder weitsichtig? [If yes, are you short-sighted or long-sighted?]",
+        "Levels": {
+            "s": "short-sighted",
+            "l": "long-sighted"
+        }
+    },
+    "sense_eyesight_prescription_right": {
+        "Description": "self reported eyesight prescription, right eye, diopter; Q: Kennen Sie die Dioptrie-Zahl Ihrer Brille? [Do you know the diopter number of your seeing aid?]"
+    },
+    "sense_eyesight_prescription_left": {
+        "Description": "self reported eyesight prescription, left eye, diopter; Q: Kennen Sie die Dioptrie-Zahl Ihrer Brille? [Do you know the diopter number of your seeing aid?]"
+    },
+    "health_meds": {
+        "Description": "medication intake, Y/N; Q: Nehmen Sie regelmaessig Medikamente ein (im Zeitraum der letzten 6 Monate)? [Did you take medication on a regualar basis in the last 6 months?]",
+        "Levels": {
+            "0": "no",
+            "1": "yes"
+        }
+    },
+    "health_meds_descr": {
+        "Description": "medication description, text; Q: Wenn ja, welche? [If yes, which?]"
+    },
+    "health_psych": {
+        "Description": "psychological health problems, Y/N; Q: Leiden Sie an einer psychischen Erkrankung (z.B. Angststoerung, Derpression, Schizophrenie, Abhaengigkeit von Alkohol oder Drogen)? [Do you suffer from psychological diseases (e.g. anxiety disorder, depresion, shizophrenia, alcohol or drug dependency)?]",
+        "Levels": {
+            "0": "no",
+            "1": "yes"
+        }
+    },
+    "health_psych_descr": {
+        "Description": "psychological health problem specification, text; Q: Falls ja, an welcher? [If yes, which diseases?]"
+    },
+    "health_neuro": {
+        "Description": "neurological health problems, Y/N; Q: Leiden Sie an einer neurologischen Erkrankung (z.B. Epilepsie, Migraene, Parkinson, Demenz, Multiple Sklerose)? [Do you suffer from neurological diseases (e.g. epilepsy, migraine, Parkinson's disease, demencia, multiple sklerosis?)]",
+        "Levels": {
+            "0": "no",
+            "1": "yes"
+        }
+    },
+    "health_neuro_descr": {
+        "Description": "neurological health problem specification, text; Q: Falls ja, an welcher? [If yes, which diseases?]"
+    },
+    "gaming_time": {
+        "Description": "daily hours spend on video games, time;  Q: Wie viele Stunden pro Tag spielen Sie durchschnittliche Videospiele? [How many hours per day do you play video games?]"
+    },
+    "gaming_level": {
+        "Description": "gaming level, rank; Q: Auf welchem Niveau spielen Sie Videospiele? [At what level do you play video games?]",
+        "Levels": {
+            "0": "zum Zeitvertreib [as a pastime]",
+            "1": "als Hobby [as a hobby]",
+            "2": "fortgeschritten [advanced]",
+            "3": "wettbewerblich [competetive]"
+        }
+    },
+    "handedness": {
+        "Description": "self reported handedness, (R/L/A); Q: Bitte geben Sie Ihre Haendigkeit an. [Please report your handedness.]",
+        "Levels": {
+            "l": "left handed",
+            "a": "ambidextrous",
+            "r": "right handed"
+        }
+    },
+    "anc_mat_grandmother_nat": {
+        "Description": "ancestoral nationality maternal grandmother, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_mat_grandmother_reg": {
+        "Description": "ancestoral regional origin maternal grandmother, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_mat_grandfather_nat": {
+        "Description": "ancestoral nationality maternal grandfather, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_mat_grandfather_reg": {
+        "Description": "ancestoral regional origin maternal grandfather, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_pat_grandmother_nat": {
+        "Description": "ancestoral nationality paternal grandmother, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_pat_grandmother_reg": {
+        "Description": "ancestoral regional origin paternal grandmother, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_pat_grandfather_nat": {
+        "Description": "ancestoral nationality paternal grandfather, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_pat_grandfather_reg": {
+        "Description": "ancestoral regional origin paternal grandfather, text; Q: Bitte machen Sie Angaben zur Herkunft Ihrer Familie. [Please provide information on the orgin of your family]"
+    },
+    "anc_mother_nat": {
+        "Description": "ancestoral nationality mother, text; Q: Falls Herkunft der Grosseltern nicht bekannt, bitte angeben. [If grandparents unknown please provide]"
+    },
+    "anc_mother_reg": {
+        "Description": "ancestoral regional origin mother, text; Q: Falls Herkunft der Grosseltern nicht bekannt, bitte angeben. [If grandparents unknown please provide]"
+    },
+    "anc_father_nat": {
+        "Description": "ancestoral nationality father, text; Q: Falls Herkunft der Grosseltern nicht bekannt, bitte angeben. [If grandparents unknown please provide]"
+    },
+    "anc_father_reg": {
+        "Description": "ancestoral regional origin father, text; Q: Falls Herkunft der Grosseltern nicht bekannt, bitte angeben. [If grandparents unknown please provide]"
+    }
+}

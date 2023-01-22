@@ -1,0 +1,55 @@
+function [fl_out] = func_changeFileName_PrePostFileext(fl_in, prefix, postfix, fileExtension)
+%TER_ADDPREFIX Add prefix, postfix to list of full paths and possible
+% change file extension 
+%   
+
+% If fl_in is a string, convert it to a cell array with a single element
+fl_in_iscell = iscell(fl_in);
+if ~fl_in_iscell
+    fl_in = {fl_in};
+end
+
+if ~exist('postfix','var')
+  postfix = '';
+end
+
+% nPathList = length(fl_in);
+% fl_out = cell(nPathList, 1);
+% for i=1:length(fl_in)
+%     path = fl_in{i};
+%     [pathFolder, pathName, pathExt] = fileparts(path);
+%     fl_out{i} = fullfile(pathFolder, [prefix, pathName, pathExt]);
+% end
+
+% separate cases where there are still '.' left in fn
+[fp, fn, fe] = cellfun(@fileparts, fl_in, 'uni', 0);
+for i=1:length(fn)
+    if any(fn{i} == '.')
+        fn_split = [strsplit(fn{i}, '.'), fe{i}(2:end)];
+        fn(i) = fn_split(1);
+        fe_temp = cellfun(@(x) ['.', x], fn_split(2:end), 'uni', 0);
+        fe{i} = [fe_temp{:}];
+    end
+end
+
+if exist('fileExtension','var')
+    if ~isempty(fileExtension) % then add a dot in case the fileExtension does not start with a dot
+        if fileExtension(1)~='.'
+            fileExtension = ['.', fileExtension];
+        end
+        fe(:) = {fileExtension}; % cellfun requires cell input
+    else % if fileExtension empty, define cell to contain empty char vec
+        fe(:) = {''};
+    end
+end
+fl_out = cellfun(@(x,y,z) fullfile(x, [prefix, y, postfix, z]),...
+  fp, fn, fe, 'uni', 0);
+
+% If fl_in was not a cell but a single string input, return fl_out as a
+% string output
+if ~fl_in_iscell
+    fl_out = fl_out{1};
+end
+
+end
+

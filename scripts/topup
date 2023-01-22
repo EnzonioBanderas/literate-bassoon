@@ -1,0 +1,62 @@
+## Inputs
+
+#sub_id=sub-z7t7095
+#sub_id=sub-z7t7096
+
+#fp_topup=/media/diskEvaluation/Evaluation/sfb1280a05study7/misc/pilots/2022-03-16/rawdata/${sub_id}/func/topup/
+
+#fp_topup=/media/diskEvaluation/Evaluation/sfb1280a05study7/misc/pilots/QSM/QSM_data/sub-Z7T7095_22-04-05/QSM_coreg/topup/
+#fn_abbr=ep3d
+
+#fn_func_input_or=${sub_id}_task-fear1_acq-ep3d1p5mmte20tr1620_dir-PA_bold
+#fn_fmap_input=${sub_id}_acq-ep3d1p5mmte20tr1620fear1_dir-AP_epi
+
+#fn_func_input_or=sub-Z7T7095sfb1280a05study7_sernum-9_time-20220405094910_descr-func_bold_task-fear_run-1_E00_M
+#fn_func_input=r${fn_func_input_or}
+#fn_fmap_input=sub-Z7T7095sfb1280a05study7_sernum-8_time-20220405094910_descr-fmap_epi_task-fear_run-1_dir-AP_E00_M
+
+fp_topup=$1
+fn_func=$2
+fn_fmap=$3
+fn_mean=$4
+
+fp_func=${fp_topup}${fn_func}
+fp_fmap=${fp_topup}${fn_fmap}
+fp_mean=${fp_topup}${fn_mean}
+
+fp_func_roi=${fp_func}_roi
+fp_fmap_roi=${fp_fmap}_roi
+
+fp_both_roi=${fp_func}_both
+
+
+## Derived from inputs
+
+
+
+
+## topup
+# create merge image, first fmap and first bold
+fslroi ${fp_func}.nii.gz ${fp_func_roi}.nii.gz 0 1
+
+fslroi ${fp_fmap}.nii.gz ${fp_fmap_roi}.nii.gz 0 1
+
+fslmerge -t ${fp_both}.nii.gz ${fp_func_roi}.nii.gz ${fp_fmap_roi}.nii.gz
+
+# topup calculation using merge image
+topup --imain=${fp_both}.nii.gz --datain=${fp_topup}acq_param.txt --config=b02b0.cnf --out=${fp_topup}topup --fout=${fp_topup}topup_field.nii.gz --iout=${fp_topup}topup_warp.nii.gz
+
+# for each input image in the merge image topup applies the correction (so for both fmap and bold), calculate mean over time as a representative distortion corrected image (e.g. for masking)
+fslmaths ${fp_topup}topup_warp.nii.gz -Tmean ${fp_topup}topup_warp_Tmean.nii.gz
+
+# apply topup on bold images
+applytopup --imain=${fp_func}.nii.gz --inindex=1 --datain=${fp_topup}acq_param.txt --topup=${fp_topup}topup --method=jac --out=${fp_func}_dc.nii.gz
+
+# unzip distortion corrected bold images for later use with spm
+#gunzip < ${fp_topup}${fn_func_input}_dc.nii.gz > ${fp_topup}${fn_func_input}_dc.nii
+
+# apply topup to mean realigned to first bold images for later in use in registration
+applytopup --imain=${fp_mean}.nii.gz --inindex=1 --datain=${fp_topup}acq_param.txt --topup=${fp_topup}topup --method=jac --out=${fp_mean}_dc.nii.gz
+
+# unzip resulting .gz file again for later use with spm
+#gunzip < ${fp_topup}mean${fn_func_input_or}_dc.nii.gz > ${fp_topup}mean${fn_func_input_or}_dc.nii

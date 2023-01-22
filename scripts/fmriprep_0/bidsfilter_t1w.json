@@ -1,0 +1,8 @@
+{
+    "t1w" :{
+        "datatype" : "anat",
+        "suffix" : "T1w",
+        "acquisition" : "mpragedefaced"
+    },
+
+}

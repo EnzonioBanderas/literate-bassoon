@@ -1,0 +1,492 @@
+%% Initialize
+clear all
+close all
+
+script_init_study7
+
+%% Settings
+% paths
+% fp_d = '/media/diskEvaluation/Evaluation/sfb1280a05study7/rawdata';
+% fp_s = '/media/diskEvaluation/Evaluation/sfb1280a05study7/sourcedata';
+% fp_de = '/media/diskEvaluation/Evaluation/sfb1280a05study7/derivatives';
+fp_fig = fullfile(fp_de, 'figures', 'ET');
+mkdir(fp_fig)
+fl_et = func_dirl2fl(dir(fullfile(fp_d, '*', '*', 'func', '*fear*_eyetrack.tsv.gz')));
+fl_ev = func_dirl2fl(dir(fullfile(fp_d, '*', '*', 'func', '*fear*_events.tsv')));
+
+% settings
+time_window_bl = [-0.6, 0];
+% time_window_CS = [3.9, 5.9];
+% time_window_US = [6.1, 8.1];
+time_window_CS = [3.9, 5.9];
+time_window_US = [6.1, 9];
+time_window_length = 2;
+maxBlinkTime = 2; % s
+CSminus_color = 2;
+CSplus_color = 1;
+
+%% Analyze
+cl_et = cell(length(fl_et), 1);
+for i = 1:length(fl_et)
+    % read in eyetracker data and events table
+    fp_et = fl_et{i};
+    fp_et_parsed = essbids_parseLabel(fp_et);
+    [data_et, time_et] = essbids_readTsv(fp_et);
+    samplingfreq_et = data_et.Properties.CustomProperties.JsonSidecar.SamplingFrequency;
+    samplingtime_et = 1000/samplingfreq_et;
+    fp_ev = func_matchFiles(fl_ev, fp_et);
+    data_ev = essbids_readTsv(fp_ev);
+    
+    % get metadata: Phase
+    if strcmp(fp_et_parsed.ses, '1')
+        if strcmp(fp_et_parsed.run, '1')
+            Phase = 'Habituation';
+        elseif strcmp(fp_et_parsed.run, '2')
+            Phase = 'Acquisition';
+        else
+            Phase = 'Unknown';
+        end
+    elseif strcmp(fp_et_parsed.ses, '2')
+        if strcmp(fp_et_parsed.run, '1')
+            Phase = 'Extinction';
+        else
+            dPhase = 'Unknown';
+        end
+    elseif strcmp(fp_et_parsed.ses, '3')
+        if strcmp(fp_et_parsed.run, '1')
+            Phase = 'Recall';
+        elseif strcmp(fp_et_parsed.run, '2')
+            Phase = 'Volatile';
+        else
+            Phase = 'Unknown';
+        end
+    else
+        Phase = 'Unknown';
+    end
+    
+    % filter out USes
+%     data_ev = data_ev(~strcmp(data_ev.trial_type, 'US'), :);
+    
+    % print out
+    fprintf(['run %d: fp_et = ', fp_et, '\n'], i)
+    fprintf(['run %d: fp_ev = ', fp_ev, '\n'], i)
+    
+    % calculate ellipse area for EyeA and EyeB
+    data_et.EyeA_Area = pi*data_et.EyeA_PupilWidth.*data_et.EyeA_PupilHeight;
+    data_et.EyeB_Area = pi*data_et.EyeB_PupilWidth.*data_et.EyeB_PupilHeight;
+    
+    % calculate pupil aspect ratio (divide minor axis by major axis)
+    data_et.EyeA_AR = data_et.EyeA_PupilHeight ./ data_et.EyeA_PupilWidth;
+    data_et.EyeB_AR = data_et.EyeB_PupilHeight ./ data_et.EyeB_PupilWidth;
+    
+    % plotting
+%     figure;
+%     plot(time_et, data_et.EyeA_Area), hold on
+%     plot(time_et, data_et.EyeB_Area)
+%     plot(time_et, data_et.EyeA_Fixation)
+%     plot(time_et, data_et.EyeB_Fixation)
+%     plot(time_et, data_et.EyeA_Quality)
+%     plot(time_et, data_et.EyeB_Quality)
+%     plot(time_et, data_et.EyeA_Region)
+%     plot(time_et, data_et.EyeB_Region)
+%     plot(time_et, data_et.EyeA_X_CorrectedGaze)
+%     plot(time_et, data_et.EyeB_X_CorrectedGaze)
+    
+    % set Area to NaN if the fixation time is lower than 2 sampling times
+    EyeA_exclusion_logical = conv(data_et.EyeA_AR < 0.7, true(round(.2*samplingfreq_et), 1), 'same') > 0;
+    EyeB_exclusion_logical = conv(data_et.EyeB_AR < 0.7, true(round(.2*samplingfreq_et), 1), 'same') > 0;
+    
+    % get blink logical by using maximum blink time
+    EyeA_exclusion_table = func_signal2table(EyeA_exclusion_logical, samplingtime_et, time_et(1) * 1000);
+    EyeB_exclusion_table = func_signal2table(EyeB_exclusion_logical, samplingtime_et, time_et(1) * 1000);
+    EyeA_blink_table = EyeA_exclusion_table(EyeA_exclusion_table.duration < maxBlinkTime * 1000, :);
+    EyeB_blink_table = EyeB_exclusion_table(EyeB_exclusion_table.duration < maxBlinkTime * 1000, :);
+    EyeA_blink_logical = func_table2signal(EyeA_blink_table, samplingtime_et, time_et * 1000);
+%     figure;plot(output_time, output_signal), hold on, plot(table_times, table_values, '*'), plot(output_time, isnan(output_signal))
+    EyeB_blink_logical = func_table2signal(EyeB_blink_table, samplingtime_et, time_et * 1000);
+    Eye_blink_logical = EyeA_blink_logical & EyeB_blink_logical; %%%%%%%%%%
+    
+    % get "out of frame" logical from exclusion and blink logicals
+    EyeA_OOF_logical = EyeA_exclusion_logical;
+    EyeA_OOF_logical(Eye_blink_logical) = false;
+    EyeB_OOF_logical = EyeB_exclusion_logical;
+    EyeB_OOF_logical(Eye_blink_logical) = false;
+    
+    % exclude out of frame moments and eyeblinks
+%     Eye_exclusion_logical = EyeA_exclusion_logical | EyeA_exclusion_logical;
+%     EyeA_exclusion_logical = conv(data_et.EyeA_Fixation < (2/3)*(1/60), true(round(.2*60), 1), 'same');
+%     EyeB_exclusion_logical = conv(data_et.EyeB_Fixation < (2/3)*(1/60), true(round(.2*60), 1), 'same');
+%     data_et.EyeA_Area(Eye_exclusion_logical > 0) = NaN;
+%     data_et.EyeB_Area(Eye_exclusion_logical > 0) = NaN;
+    data_et.EyeA_Area(EyeA_OOF_logical) = NaN;
+    data_et.EyeB_Area(EyeB_OOF_logical) = NaN;
+    data_et.EyeA_Area(Eye_blink_logical) = NaN;
+    data_et.EyeB_Area(Eye_blink_logical) = NaN;
+    
+    % set Area to NaN if eye is closed
+    EyeA_closed_logical = data_et.EyeA_Area < 2e-3;
+    EyeB_closed_logical = data_et.EyeB_Area < 2e-3;
+    data_et.EyeA_Area(EyeA_closed_logical) = NaN;
+    data_et.EyeB_Area(EyeB_closed_logical) = NaN;
+    
+    % separate exclusion logical in long and short periods, where short
+    % periods are blinks and long periods are eye out of frame periods
+    
+    % calculate average between eyes
+%     data_et.EyeMean_Area = nanmean([data_et.EyeA_Area, data_et.EyeB_Area], 2);
+%     data_et.EyeMean_Area = data_et.EyeA_Area;
+%     data_et.EyeMean_Area = data_et.EyeB_Area;
+%     data_et.EyeMean_Area = (data_et.EyeA_Area + data_et.EyeB_Area) / 2;
+    
+    % loop over CS events
+    EyeA_Area_bl = zeros(size(data_ev, 1), 1);
+    EyeA_Area_CS = zeros(size(data_ev, 1), 1);
+    EyeA_Area_US = zeros(size(data_ev, 1), 1);
+    EyeA_Area_CSnorm = zeros(size(data_ev, 1), 1);
+    EyeA_Area_USnorm = zeros(size(data_ev, 1), 1);
+    EyeB_Area_bl = zeros(size(data_ev, 1), 1);
+    EyeB_Area_CS = zeros(size(data_ev, 1), 1);
+    EyeB_Area_US = zeros(size(data_ev, 1), 1);
+    EyeB_Area_CSnorm = zeros(size(data_ev, 1), 1);
+    EyeB_Area_USnorm = zeros(size(data_ev, 1), 1);
+    CSplus_count = 0;
+    CSminus_count = 0;
+    Block = zeros(size(data_ev, 1), 1);
+    EyeA_nanCount = zeros(size(data_ev, 1), 1);
+    EyeB_nanCount = zeros(size(data_ev, 1), 1);
+    EyeC_Area_CSnorm = zeros(size(data_ev, 1), 1);
+    EyeC_Area_USnorm = zeros(size(data_ev, 1), 1);
+    
+    % trial loop
+    for j = 1:size(data_ev, 1)
+        % calculate EyeMean_Areas (baseline, CS and US)
+        EyeA_Area_bl(j) = nanmean(data_et.EyeA_Area(...
+            time_et > data_ev.onset(j) + time_window_bl(1) & ...
+            time_et < data_ev.onset(j) + time_window_bl(2)));
+        EyeA_Area_CS(j) = nanmean(data_et.EyeA_Area(...
+            time_et > data_ev.onset(j) + time_window_CS(1) & ...
+            time_et < data_ev.onset(j) + time_window_CS(2)));
+        EyeA_Area_US(j) = nanmean(data_et.EyeA_Area(...
+            time_et > data_ev.onset(j) + time_window_US(1) & ...
+            time_et < data_ev.onset(j) + time_window_US(2)));
+        EyeB_Area_bl(j) = nanmean(data_et.EyeB_Area(...
+            time_et > data_ev.onset(j) + time_window_bl(1) & ...
+            time_et < data_ev.onset(j) + time_window_bl(2)));
+        EyeB_Area_CS(j) = nanmean(data_et.EyeB_Area(...
+            time_et > data_ev.onset(j) + time_window_CS(1) & ...
+            time_et < data_ev.onset(j) + time_window_CS(2)));
+        EyeB_Area_US(j) = nanmean(data_et.EyeB_Area(...
+            time_et > data_ev.onset(j) + time_window_US(1) & ...
+            time_et < data_ev.onset(j) + time_window_US(2)));
+        
+        % count number of NaN's in timewindows for EyeA and EyeB
+        EyeA_nanCount_bl = sum(isnan(data_et.EyeA_Area(...
+            time_et > data_ev.onset(j) + time_window_bl(1) & ...
+            time_et < data_ev.onset(j) + time_window_bl(2))));
+        EyeA_nanCount_CS = sum(isnan(data_et.EyeA_Area(...
+            time_et > data_ev.onset(j) + time_window_CS(1) & ...
+            time_et < data_ev.onset(j) + time_window_CS(2))));
+        EyeA_nanCount_US = sum(isnan(data_et.EyeA_Area(...
+            time_et > data_ev.onset(j) + time_window_US(1) & ...
+            time_et < data_ev.onset(j) + time_window_US(2))));
+        EyeB_nanCount_bl = sum(isnan(data_et.EyeB_Area(...
+            time_et > data_ev.onset(j) + time_window_bl(1) & ...
+            time_et < data_ev.onset(j) + time_window_bl(2))));
+        EyeB_nanCount_CS = sum(isnan(data_et.EyeB_Area(...
+            time_et > data_ev.onset(j) + time_window_CS(1) & ...
+            time_et < data_ev.onset(j) + time_window_CS(2))));
+        EyeB_nanCount_US = sum(isnan(data_et.EyeB_Area(...
+            time_et > data_ev.onset(j) + time_window_US(1) & ...
+            time_et < data_ev.onset(j) + time_window_US(2))));
+        EyeA_nanCount(j) = EyeA_nanCount_bl + EyeA_nanCount_CS + EyeA_nanCount_US;
+        EyeB_nanCount(j) = EyeB_nanCount_bl + EyeB_nanCount_CS + EyeB_nanCount_US;
+        
+        % choose the eye with the least amount of NaNs
+        if EyeA_nanCount(j) < EyeB_nanCount(j)
+            EyeC_Area_CSnorm(j) = (EyeA_Area_CS(j) - EyeA_Area_bl(j)) / EyeA_Area_bl(j);
+            EyeC_Area_USnorm(j) = (EyeA_Area_US(j) - EyeA_Area_bl(j)) / EyeA_Area_bl(j);
+        else
+            EyeC_Area_CSnorm(j) = (EyeB_Area_CS(j) - EyeB_Area_bl(j)) / EyeB_Area_bl(j);
+            EyeC_Area_USnorm(j) = (EyeB_Area_US(j) - EyeB_Area_bl(j)) / EyeB_Area_bl(j);
+        end
+        
+        % normalize with baseline
+        EyeA_Area_CSnorm(j) = (EyeA_Area_CS(j) - EyeA_Area_bl(j)) / EyeA_Area_bl(j);
+        EyeA_Area_USnorm(j) = (EyeA_Area_US(j) - EyeA_Area_bl(j)) / EyeA_Area_bl(j);
+        EyeB_Area_CSnorm(j) = (EyeB_Area_CS(j) - EyeA_Area_bl(j)) / EyeB_Area_bl(j);
+        EyeB_Area_USnorm(j) = (EyeB_Area_US(j) - EyeA_Area_bl(j)) / EyeB_Area_bl(j);
+        
+        % get metadata: Block number
+        if strcmp(data_ev.trial_type{j}, 'CSplus')
+            CSplus_count = CSplus_count + 1;
+            Block(j) = CSplus_count;
+        elseif strcmp(data_ev.trial_type{j}, 'CSminus')
+            CSminus_count = CSminus_count + 1;
+            Block(j) = CSminus_count;
+        end
+        
+        % plotting
+%         switch Phase
+%             case 'Volatile'
+%         end
+        EyeNorm_arr = [EyeA_Area_CSnorm(j), EyeA_Area_USnorm(j), ...
+                       EyeB_Area_CSnorm(j), EyeB_Area_USnorm(j)];
+        if any(EyeNorm_arr > 2) && ~strcmp(data_ev.trial_type{j}, 'US')
+            
+            % prepare eyetracker table data for plotting
+            time_et_plot = time_et - data_ev.onset(j);
+            time_et_logical = time_et_plot > -2 & time_et_plot < 6+4;
+            
+            % plotting
+            figure
+            plot(time_et_plot(time_et_logical), ...
+                data_et.EyeA_Area(time_et_logical)), hold on
+            plot(time_et_plot(time_et_logical), ...
+                data_et.EyeB_Area(time_et_logical))
+            plot(time_et_plot(time_et_logical), ...
+                data_et.EyeA_AR(time_et_logical))
+            plot(time_et_plot(time_et_logical), ...
+                data_et.EyeB_AR(time_et_logical))
+            
+            % plot CS
+            data_ev_signalTable = [data_ev.onset * 1000, ...
+                data_ev.duration * 1000];
+            [data_ev_CS, time_ev_CS] = func_table2signal(data_ev_signalTable(~strcmp(data_ev.trial_type, 'US'), :));
+            time_ev_CS = time_ev_CS - data_ev_signalTable(j, 1);
+            time_ev_CS = time_ev_CS / 1000;
+            time_ev_CS_logical = time_ev_CS > -2 & time_ev_CS < 6+4;
+            plot(time_ev_CS(time_ev_CS_logical), ...
+                data_ev_CS(time_ev_CS_logical))
+            
+            % plot US
+            if data_ev.reinforced(j)==1
+                [data_ev_US, time_ev_US] = func_table2signal(data_ev_signalTable(strcmp(data_ev.trial_type, 'US'), :));
+                time_ev_US = time_ev_US - data_ev_signalTable(j, 1);
+                time_ev_US = time_ev_US / 1000;
+                time_ev_US_logical = time_ev_US > -2 & time_ev_US < 6+4;
+                plot(time_ev_US(time_ev_US_logical), ...
+                    data_ev_US(time_ev_US_logical))
+                if strcmp(data_ev.trial_type{j}, 'CSplus')
+                    legend({'A_Area', 'B_Area', 'A_AR', 'B_AR', 'CS+', 'US'}, 'Interpreter', 'none')
+                elseif strcmp(data_ev.trial_type{j}, 'CSminus')
+                    legend({'A_Area', 'B_Area', 'A_AR', 'B_AR', 'CS-', 'US'}, 'Interpreter', 'none')
+                end
+            else
+                if strcmp(data_ev.trial_type{j}, 'CSplus')
+                    legend({'A_Area', 'B_Area', 'A_AR', 'B_AR', 'CS+'}, 'Interpreter', 'none')
+                elseif strcmp(data_ev.trial_type{j}, 'CSminus')
+                    legend({'A_Area', 'B_Area', 'A_AR', 'B_AR', 'CS-'}, 'Interpreter', 'none')
+                end
+            end
+            title([fp_et_parsed.sub, ' ', Phase, ' Block=', num2str(Block(j)), ' ', num2str(max(EyeNorm_arr))])
+        
+        end
+    end
+    
+    % set metadata: Subject, Phase, Grp, CS, Block
+    data_ev.Subject = repmat({fp_et_parsed.sub}, [size(data_ev, 1), 1]);
+    data_ev.Phase = repmat({Phase}, [size(data_ev, 1), 1]);
+    data_ev.Block = Block;
+    data_ev.Grp = ones([size(data_ev, 1), 1]);
+    data_ev.EyeA_Area_bl = EyeA_Area_bl;
+%     data_ev.EyeA_Area_CS = EyeA_Area_CS;
+%     data_ev.EyeA_Area_US = EyeA_Area_US;
+    data_ev.EyeA_Area_CSnorm = EyeA_Area_CSnorm;
+    data_ev.EyeA_Area_USnorm = EyeA_Area_USnorm;
+    data_ev.EyeB_Area_bl = EyeB_Area_bl;
+%     data_ev.EyeB_Area_CS = EyeB_Area_CS;
+%     data_ev.EyeB_Area_US = EyeB_Area_US;
+    data_ev.EyeB_Area_CSnorm = EyeB_Area_CSnorm;
+    data_ev.EyeB_Area_USnorm = EyeB_Area_USnorm;
+    data_ev.EyeC_Area_CSnorm = EyeC_Area_CSnorm;
+    data_ev.EyeC_Area_USnorm = EyeC_Area_USnorm;
+    
+    % save table to ET cell
+    cl_et{i} = data_ev;
+    
+end
+
+% concatenate table for all ET files
+tb_et = vertcat(cl_et{:});
+
+% filter out US
+tb_et = tb_et(~strcmp(tb_et.trial_type, 'US'), :);
+
+% filter out unknowns!
+tb_et = tb_et(~strcmp(tb_et.Phase, 'Unknown'), :);
+
+% filter out Z7T7161 and Z7T7162 beyond ses-1
+tb_et = tb_et(~((strcmp(tb_et.Subject, 'Z7T7161') | ...
+                 strcmp(tb_et.Subject, 'Z7T7162')) & ...
+               (~strcmp(tb_et.Phase, 'Habituation') & ...
+                ~strcmp(tb_et.Phase, 'Acquisition'))), :);
+
+% filter out specific trials
+tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7179') & ...
+                strcmp(tb_et.Phase, 'Acquisition') & ...
+                tb_et.trial_index==32), :); % not a lot of data?
+tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7179') & ...
+                strcmp(tb_et.Phase, 'Volatile') & ...
+                tb_et.trial_index==85), :); % not a lot of data?
+tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7161') & ...
+                strcmp(tb_et.Phase, 'Acquisition') & ...
+                tb_et.Block==16), :); % not a lot of data?
+
+% write to output .tsv
+% essbids_writeTsv()
+writetable(tb_et, fullfile(fp_de, 'eyetrack_preliminary_analysis_chosen.xlsx'));
+tb_et_new = groupsummary(tb_et, {'Phase', 'Block', 'trial_type'}, 'nnz', 'trial_index');
+tb_et_summary = groupsummary(tb_et_new, 'Phase', 'max', 'GroupCount');
+
+
+%% plot errorbar all subs
+close all
+c = colormap('lines');
+
+uniq_Measure = {'EyeC_Area_CSnorm', 'EyeC_Area_USnorm'};
+for iM = 1:length(uniq_Measure)
+
+    tb_et_CSplus = tb_et(strcmp(tb_et.trial_type, 'CSplus'), :);
+    tb_et_CSminus = tb_et(strcmp(tb_et.trial_type, 'CSminus'), :);
+    uniq_Phase = unique(tb_et.Phase);
+%     uniq_Phase = {'Acquisition', 'Extinction'};
+    figure('units', 'normalized', 'outerposition', [0, 0, .5, .7])
+    for i=1:length(uniq_Phase)
+        tb_et_CSplus_Phase = tb_et_CSplus(strcmp(tb_et_CSplus.Phase, uniq_Phase{i}), :);
+        tb_et_CSminus_Phase = tb_et_CSminus(strcmp(tb_et_CSminus.Phase, uniq_Phase{i}), :);
+    
+        uniq_Block = unique([tb_et_CSplus_Phase.Block; tb_et_CSminus_Phase.Block]);
+        mean_CSplus_Block = zeros(length(uniq_Block), 1);
+        std_CSplus_Block = zeros(length(uniq_Block), 1);
+        sem_CSplus_Block = zeros(length(uniq_Block), 1);
+        mean_CSminus_Block = zeros(length(uniq_Block), 1);
+        std_CSminus_Block = zeros(length(uniq_Block), 1);
+        sem_CSminus_Block = zeros(length(uniq_Block), 1);
+        for j=1:length(uniq_Block)
+            tb_et_CSplus_Phase_Block = tb_et_CSplus_Phase(tb_et_CSplus_Phase.Block == uniq_Block(j), :);
+            mean_CSplus_Block(j) = nanmean(tb_et_CSplus_Phase_Block.(uniq_Measure{iM}));
+            std_CSplus_Block(j) = nanstd(tb_et_CSplus_Phase_Block.(uniq_Measure{iM}));
+            length_Block = length(tb_et_CSplus_Phase_Block.(uniq_Measure{iM}));
+            sem_CSplus_Block(j) = std_CSplus_Block(j) / sqrt(length_Block);
+            tb_et_CSplus_Phase_Block.nParticipants = length_Block*ones(size(tb_et_CSplus_Phase_Block, 1), 1); 
+            
+            tb_et_CSminus_Phase_Block = tb_et_CSminus_Phase(tb_et_CSminus_Phase.Block == uniq_Block(j), :);
+            mean_CSminus_Block(j) = nanmean(tb_et_CSminus_Phase_Block.(uniq_Measure{iM}));
+            std_CSminus_Block(j) = nanstd(tb_et_CSminus_Phase_Block.(uniq_Measure{iM}));
+            length_Block = length(tb_et_CSminus_Phase_Block.(uniq_Measure{iM}));
+            sem_CSminus_Block(j) = std_CSminus_Block(j) / sqrt(length_Block);
+            tb_et_CSminus_Phase_Block.nParticipants = length_Block*ones(size(tb_et_CSminus_Phase_Block, 1), 1); 
+        end
+
+%         figure % CS, CS+ and CS-
+        switch uniq_Phase{i}
+            case 'Habituation'
+                subplot(3, 2, 1)
+            case 'Acquisition'
+                subplot(3, 2, 2)
+%                 subplot(2, 1, 1)
+            case 'Extinction'
+                subplot(3, 2, 3)
+%                 subplot(2, 1, 2)
+            case 'Recall'
+                subplot(3, 2, 4)
+            case 'Volatile'
+                subplot(3, 2, [5, 6])
+                plot(uniq_Block(ismember(uniq_Block, [7, 13, 18])), ...
+                     mean_CSplus_Block(ismember(uniq_Block, [7, 13, 18])), ...
+                     'o', 'MarkerSize',13, 'MarkerEdgeColor', 'g'), hold on
+                plot(uniq_Block(ismember(uniq_Block, [31, 37, 42])), ...
+                     mean_CSplus_Block(ismember(uniq_Block, [31, 37, 42])), ...
+                     'o', 'MarkerSize',13, 'MarkerEdgeColor', 'y')
+        end
+        err1 = errorbar(uniq_Block, mean_CSminus_Block, sem_CSminus_Block, 'Color', c(CSminus_color, :)); hold on
+        err2 = errorbar(uniq_Block, mean_CSplus_Block, sem_CSplus_Block, 'Color', c(CSplus_color, :));
+        legend([err1, err2], {'CS-', 'CS+'}, 'Interpreter', 'none')
+        title(sprintf([uniq_Phase{i}, ' (n=%d)'], ...
+            tb_et_summary.max_GroupCount(strcmp(tb_et_summary.Phase, uniq_Phase{i}))))
+        xlabel('Trial number')
+        ylabel('CS response ratio (AU)')
+    end
+    
+    sgtitle(['All subjects ', uniq_Measure{iM}], 'Interpreter', 'none')
+    saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.pdf']))
+    saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.fig']))
+%     print(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.pdf']), '-bestfit')
+end
+
+%% plot errorbar
+close all
+c = colormap('lines');
+
+uniq_Measure = {'EyeC_Area_CSnorm', 'EyeC_Area_USnorm'};
+for iM = 1:length(uniq_Measure)
+
+    uniq_Subject = unique(tb_et.Subject);
+    for s=1:length(uniq_Subject)
+        tb_et_CSplus = tb_et(strcmp(tb_et.trial_type, 'CSplus') & ...
+            strcmp(tb_et.Subject, uniq_Subject{s}), :);
+        tb_et_CSminus = tb_et(strcmp(tb_et.trial_type, 'CSminus') & ...
+            strcmp(tb_et.Subject, uniq_Subject{s}), :);
+        uniq_Phase = unique(tb_et.Phase);
+        figure('units', 'normalized', 'outerposition', [0, 0, .5, .7])
+        for i=1:length(uniq_Phase)
+            tb_et_CSplus_Phase = tb_et_CSplus(strcmp(tb_et_CSplus.Phase, uniq_Phase{i}), :);
+            tb_et_CSminus_Phase = tb_et_CSminus(strcmp(tb_et_CSminus.Phase, uniq_Phase{i}), :);
+
+            uniq_Block = unique([tb_et_CSplus_Phase.Block; tb_et_CSminus_Phase.Block]);
+            try
+                mean_CSplus_Block = zeros(length(uniq_Block), 1);
+                std_CSplus_Block = zeros(length(uniq_Block), 1);
+                sem_CSplus_Block = zeros(length(uniq_Block), 1);
+                mean_CSminus_Block = zeros(length(uniq_Block), 1);
+                std_CSminus_Block = zeros(length(uniq_Block), 1);
+                sem_CSminus_Block = zeros(length(uniq_Block), 1);
+                for j=1:length(uniq_Block)
+                    tb_et_CSplus_Phase_Block = tb_et_CSplus_Phase(tb_et_CSplus_Phase.Block == uniq_Block(j), :);
+                    mean_CSplus_Block(j) = nanmean(tb_et_CSplus_Phase_Block.(uniq_Measure{iM}));
+                    std_CSplus_Block(j) = nanstd(tb_et_CSplus_Phase_Block.(uniq_Measure{iM}));
+                    length_Block = length(tb_et_CSplus_Phase_Block.(uniq_Measure{iM}));
+                    sem_CSplus_Block(j) = std_CSplus_Block(j) / sqrt(length_Block);
+
+                    tb_et_CSminus_Phase_Block = tb_et_CSminus_Phase(tb_et_CSminus_Phase.Block == uniq_Block(j), :);
+                    mean_CSminus_Block(j) = nanmean(tb_et_CSminus_Phase_Block.(uniq_Measure{iM}));
+                    std_CSminus_Block(j) = nanstd(tb_et_CSminus_Phase_Block.(uniq_Measure{iM}));
+                    length_Block = length(tb_et_CSminus_Phase_Block.(uniq_Measure{iM}));
+                    sem_CSminus_Block(j) = std_CSminus_Block(j) / sqrt(length_Block);
+                end
+
+        %         figure % CS, CS+ and CS-
+                switch uniq_Phase{i}
+                    case 'Habituation'
+                        subplot(3, 2, 1)
+                    case 'Acquisition'
+                        subplot(3, 2, 2)
+                    case 'Extinction'
+                        subplot(3, 2, 3)
+                    case 'Recall'
+                        subplot(3, 2, 4)
+                    case 'Volatile'
+                        subplot(3, 2, [5, 6])
+                        plot(uniq_Block(ismember(uniq_Block, [7, 13, 18])), ...
+                             mean_CSplus_Block(ismember(uniq_Block, [7, 13, 18])), ...
+                             'o', 'MarkerSize',13, 'MarkerEdgeColor', 'g'), hold on
+                        plot(uniq_Block(ismember(uniq_Block, [31, 37, 42])), ...
+                             mean_CSplus_Block(ismember(uniq_Block, [31, 37, 42])), ...
+                             'o', 'MarkerSize',13, 'MarkerEdgeColor', 'y')
+                end
+                plt1 = plot(uniq_Block, mean_CSminus_Block, 'Marker', 'o', 'Color', c(CSminus_color, :)); hold on
+                plt2 = plot(uniq_Block, mean_CSplus_Block, 'Marker', '*', 'Color', c(CSplus_color, :));
+                legend([plt1, plt2], {'CS-', 'CS+'}, 'Interpreter', 'none')
+                title(sprintf([uniq_Phase{i}], ...
+                    tb_et_summary.max_GroupCount(strcmp(tb_et_summary.Phase, uniq_Phase{i}))))
+                xlabel('Trial number')
+                ylabel('CS response ratio (AU)')
+            catch
+            end
+        end
+        
+        sgtitle([uniq_Subject{s}, ' ', uniq_Measure{iM}], 'Interpreter', 'none')
+        saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.pdf']))
+        saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.fig']))
+    end
+end
