@@ -7,7 +7,7 @@ function func_study7_skinconductanceBids2RUBeval(fl_physiobids, dir_eval)
   bids_label_include = true(length(bids_label), 1);
   for i=1:length(bids_label)
       if ~ismember('acq', fieldnames(bids_label{i}))
-            fprintf(fullfile(bids_label{i}.fpath, bids_label{i}.fname))
+            fprintf('%s', fullfile(bids_label{i}.fpath, bids_label{i}.fname))
             bids_label_include(i) = false;
             delete(fullfile(bids_label{i}.fpath, bids_label{i}.fname))
       end

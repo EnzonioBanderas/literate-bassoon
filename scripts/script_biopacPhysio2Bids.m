@@ -1,4 +1,3 @@
-
 script_init_study7;
 % fp_s    = '/media/diskEvaluation/Evaluation/sfb1280a05study7/dumpHereForSorting/sourcedata2';
 fp_bids = fp_d;
@@ -12,6 +11,8 @@ fl_acq = fl_acq(not(contains(fl_acq,{'Z7T7095','Z7T7096','Z7T7104',...
 % fl_acq = fl_acq(not(contains(fl_acq,{'Z7T7095','Z7T7096','Z7T7104',...
 %   'Z7T7116','Z7T7146','Z7T7146','Z7T7158','Z7T7161','Z7T7162'}))); %
 
+%% mysterious error bugfix? line 315 in read part of this script (essbids_biopac2bids)
+fclose('all')
 
 %% import acq files
 ws = warning('query','essbids:MultiplesDataType');

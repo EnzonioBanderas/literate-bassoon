@@ -10,6 +10,7 @@ if isempty(fp_scr)
   end
 end
 fp0    = fileparts(fp_scr);
+% fp0    = 'F:\Evaluation\sfb1280a05study7'; %TEMPFIX
 fp_d   = fullfile(fp0,'rawdata');
 fp_s   = fullfile(fp0,'sourcedata');
 fp_us  = fullfile(fp0,'sourcefiles_unsorted');

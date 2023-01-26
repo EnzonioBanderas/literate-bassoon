@@ -5,10 +5,11 @@ function func_plotPhysioByTrial(filePathPhysio,filePathEvents,filePathEyetrack,v
 fn_events = convertStringsToChars(filePathEvents);
 fn_eyetrack = convertStringsToChars(filePathEyetrack);
 fn_physio = convertStringsToChars(filePathPhysio);
-fn_diamond = '/media/diskEvaluation/Evaluation/sfb1280a05study7/misc/diamond.png';
-fn_square  = '/media/diskEvaluation/Evaluation/sfb1280a05study7/misc/square.png';
-img_d = imread(fn_diamond);
-img_s = imread(fn_square);
+% fn_diamond = '/media/diskEvaluation/Evaluation/sfb1280a05study7/misc/diamond.png';
+% fn_diamond = fullfile('sfb1280a05study7', 'misc', 'diamond.png');
+% fn_square  = '/media/diskEvaluation/Evaluation/sfb1280a05study7/misc/square.png';
+% img_d = imread(fn_diamond);
+% img_s = imread(fn_square);
 
 bf = essbids_parseLabel(fn_physio);
 figTitle = sprintf('sub-%s  ses-%s  run-%s  trial-',bf.sub,bf.ses,bf.run);
@@ -28,9 +29,9 @@ t_physio.time = t_physio.Properties.CustomProperties.Time;
 [t_eyetrack, time_eyetrack] = essbids_readTsv(fn_eyetrack);
 t_eyetrack.time = t_eyetrack.Properties.CustomProperties.Time;
 if figure_setting == 2
-    t_eyetrack_pro = cleanEyeTrackData(t_eyetrack,time_eyetrack,0,1);
-    t_eyetrack_pro7 = cleanEyeTrackData(t_eyetrack,time_eyetrack,0.6,1);
-    t_eyetrack_pro8 = cleanEyeTrackData(t_eyetrack,time_eyetrack,0.8,1);
+    t_eyetrack_pro = cleanEyeTrackData(t_eyetrack,time_eyetrack,0,.5);
+    t_eyetrack_pro7 = cleanEyeTrackData(t_eyetrack,time_eyetrack,0.6,.5);
+    t_eyetrack_pro8 = cleanEyeTrackData(t_eyetrack,time_eyetrack,0.8,.5);
 end
 
 %% Loading in Events data & process it to be plotted
@@ -42,31 +43,31 @@ t_events(log_type,:) = [];
 
 hFig = figure('Units','normalized','OuterPosition',[0.1 0 1 1],'Name',bf.sub);
 %% Plotting Screen
-if figure_setting == 3
-    t_eyetrack.EyeA_X_Gaze = t_eyetrack.EyeA_X_Gaze .* 1980;
-    t_eyetrack.EyeB_X_Gaze = t_eyetrack.EyeB_X_Gaze .* 1980;
-    
-    t_eyetrack.EyeA_Y_Gaze = t_eyetrack.EyeA_Y_Gaze .* 1080;
-    t_eyetrack.EyeB_Y_Gaze = t_eyetrack.EyeB_Y_Gaze .* 1080;
-    
-    ax_screen = subplot(4,2,1:4);
-    temp1 = t_events.stim_file{1};
-    log_trial = t_eyetrack.time > t_events.onset(curr_idx) - 4 & t_eyetrack.time < t_events.onset(curr_idx) + 6;
-    if contains(temp1,'diamond')
-        imshow(img_d);
-        axis on;
-    elseif contains(temp1,'square')
-        imshow(img_s);
-        axis on;
-    end
-    hold on
-    scatter(t_eyetrack.EyeA_X_Gaze(log_trial),t_eyetrack.EyeA_Y_Gaze(log_trial),'green','filled','o','MarkerFaceAlpha',0.1);
-    scatter(t_eyetrack.EyeB_X_Gaze(log_trial),t_eyetrack.EyeB_Y_Gaze(log_trial),'blue','filled','o','MarkerFaceAlpha',0.1);
-    legend('Eye A','Eye B')
-    title(string(figTitle) + string(t_events.trial_index(1)));
-    ax_screen.XLim = [-200 2180];
-    ax_screen.YLim = [-200 1280];
-end    
+% if figure_setting == 3
+%     t_eyetrack.EyeA_X_Gaze = t_eyetrack.EyeA_X_Gaze .* 1980;
+%     t_eyetrack.EyeB_X_Gaze = t_eyetrack.EyeB_X_Gaze .* 1980;
+%     
+%     t_eyetrack.EyeA_Y_Gaze = t_eyetrack.EyeA_Y_Gaze .* 1080;
+%     t_eyetrack.EyeB_Y_Gaze = t_eyetrack.EyeB_Y_Gaze .* 1080;
+%     
+%     ax_screen = subplot(4,2,1:4);
+%     temp1 = t_events.stim_file{1};
+%     log_trial = t_eyetrack.time > t_events.onset(curr_idx) - 4 & t_eyetrack.time < t_events.onset(curr_idx) + 6;
+%     if contains(temp1,'diamond')
+%         imshow(img_d);
+%         axis on;
+%     elseif contains(temp1,'square')
+%         imshow(img_s);
+%         axis on;
+%     end
+%     hold on
+%     scatter(t_eyetrack.EyeA_X_Gaze(log_trial),t_eyetrack.EyeA_Y_Gaze(log_trial),'green','filled','o','MarkerFaceAlpha',0.1);
+%     scatter(t_eyetrack.EyeB_X_Gaze(log_trial),t_eyetrack.EyeB_Y_Gaze(log_trial),'blue','filled','o','MarkerFaceAlpha',0.1);
+%     legend('Eye A','Eye B')
+%     title(string(figTitle) + string(t_events.trial_index(1)));
+%     ax_screen.XLim = [-200 2180];
+%     ax_screen.YLim = [-200 1280];
+% end    
 %% Plotting the Eventmarkers
 if figure_setting < 3
     ax_events = subplot(5,2,9:10);
@@ -269,7 +270,7 @@ function nxtPushButton(~,~)
 end
 %% Define Callback function for "Print"-Button
 function printPushButton(~,~)
-    dir_save = uigetdir('/media/diskEvaluation/Evaluation/sfb1280a05study7/','Please select a folder to save to.');
+    dir_save = uigetdir('sfb1280a05study7','Please select a folder to save to.');
     if dir_save == 0
         warndlg('You have not selected a folder.','No folder selected','modal')
         return
@@ -321,8 +322,8 @@ tableRawEyetrack.EyeA_Blink = tableRawEyetrack.EyeA_AspectRatio < calc_AR_EA;
 tableRawEyetrack.EyeB_Blink = tableRawEyetrack.EyeB_AspectRatio < calc_AR_EB;
 
 
-tableRawEyetrack.EyeA_exclu_log = conv(tableRawEyetrack.EyeA_AspectRatio < calc_AR_EA, true(round(.2*et_sampling_freq), 1), 'same') > 0;
-tableRawEyetrack.EyeB_exclu_log = conv(tableRawEyetrack.EyeB_AspectRatio < calc_AR_EB, true(round(.2*et_sampling_freq), 1), 'same') > 0;
+tableRawEyetrack.EyeA_exclu_log = conv(tableRawEyetrack.EyeA_AspectRatio < calc_AR_EA, true(round(.5*et_sampling_freq), 1), 'same') > 0;
+tableRawEyetrack.EyeB_exclu_log = conv(tableRawEyetrack.EyeB_AspectRatio < calc_AR_EB, true(round(.5*et_sampling_freq), 1), 'same') > 0;
 
 t_exclusion_EyeA = func_signal2table(tableRawEyetrack.EyeA_exclu_log, et_sampling_freq, ti_eyetrack(1) * 1000);
 t_exclusion_EyeB = func_signal2table(tableRawEyetrack.EyeB_exclu_log, et_sampling_freq, ti_eyetrack(1) * 1000);

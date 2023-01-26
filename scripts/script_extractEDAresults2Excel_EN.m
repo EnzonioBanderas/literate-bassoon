@@ -6,40 +6,41 @@ script_init_study7
 %% Settings
 % addpath /media/diskEvaluation/Evaluation/sfb1280a05study6/scripts/packages/toolbox_ter
 % addpath /media/diskEvaluation/Evaluation/sfb1280a05study6/scripts/essbids
-fp_der = '/media/diskEvaluation/Evaluation/sfb1280a05study7/derivatives/';
+% fp_de = '/media/diskEvaluation/Evaluation/sfb1280a05study7/derivatives/';
 % fp_der = '/media/diskEvaluation/Evaluation/sfb1280a05study7/dumpHereForSorting/derivatives/';
-fp0 = fullfile(fp_der, 'EDAevaluation');
-fp_fig = fullfile(fp_der, 'figures', 'EDA');
+fp0 = fullfile(fp_de, 'EDAevaluation_processed_161to301');
+fp_fig = fullfile(fp_de, 'figures', 'EDA');
 
-mkdir(fp_fig)
+if ~exist(fp_fig, 'dir')
+    mkdir(fp_fig)
+end
 
-flist = ter_listFiles(fullfile(fp0,''),'*_EDA_Result.mat');
+% Get file paths
+fl = ter_listFiles(fullfile(fp0,''),'*_EDA_Result.mat');
+nFiles = length(fl);
 edaRes_all = cell(1,2);
 warning('off',    'MATLAB:xlswrite:AddSheet');
 fname = fullfile(fp0,strcat('EDAresults_', datestr(datetime, 'yyyymmddTHHMMSS'), '.xlsx'));
 EIRResults = [];
 TIRResults = [];
 
-reinstatementFiles = find(contains(flist,'ses-02_task-fear_run-2'));
-flist(reinstatementFiles) = [];
-
-
-for i=1:numel(flist)
-    [~,subject,~] = ter_fparts(flist{i},3);
-    [~,currentfile,~] = ter_fparts(flist{i},1);
-    [~,session,~] = ter_fparts(flist{i},2);
-    fprintf('Reading file %d of %d (%s)...\n',i,numel(flist), currentfile);
+%%
+for i=1:length(fl)
+    [~,subject,~] = ter_fparts(fl{i},3);
+    [~,currentfile,~] = ter_fparts(fl{i},1);
+    [~,session,~] = ter_fparts(fl{i},2);
+    fprintf('Reading file %d of %d (%s)...\n',i,numel(fl), currentfile);
     clearvars EIRResults TIRResults;
     
-    [EIRResults,~] = exportEDA2Excel(flist{i},1,5.9,1);
-    [TIRResults,~] = exportEDA2Excel(flist{i},6,12.5,1);
-    [fp,fn,~] = fileparts(flist{i});
+    [EIRResults,~] = exportEDA2Excel(fl{i},1,5.9,1);
+    [TIRResults,~] = exportEDA2Excel(fl{i},6,12.5,1);
+    [fp,fn,~] = fileparts(fl{i});
     
     
     try
 %         load(strrep(flist{i},'_EDA_EDA_Result.mat','_eventTable.mat'),'eventtable');
-        load(strrep(flist{i},'_EDA_EDA_Result.mat','_trialDefinition.mat'),'sPos', 'numTrials');
-        fp_parsed = essbids_parseLabel(flist{i});
+        load(strrep(fl{i},'_EDA_EDA_Result.mat','_trialDefinition.mat'),'sPos', 'numTrials');
+        fp_parsed = essbids_parseLabel(fl{i});
         EIReventtable = cell(numTrials, 1);
         TIReventtable = cell(numTrials, 1);
         group_cell = cell(numTrials, 1);
@@ -171,13 +172,20 @@ for v = 1:numel(edaRes_all)
 end
 warning('on',    'MATLAB:xlswrite:AddSheet');
 
-
+fp_workSpace = fullfile(fp_de, 'script_extractEDAresult2Excel.mat');
+save(fullfile(fp_de, 'script_extractEDAresult2Excel.mat'))
 
 %% plot errorbar
 close all
 c = colormap('lines');
 
-uniq_Measure = {'CS_response', 'US_response'};
+if ~exist('edaRes_all', 'var')
+    script_init_study7
+    fp_workSpace = fullfile(fp_de, 'script_extractEDAresult2Excel.mat');
+    load(fp_workSpace)
+end
+
+uniq_Measure = {'SCR_CS', 'SCR_US'};
 for iM = 1:length(edaRes_all)
     tb_eda = edaRes_all{iM};
     tb_eda_summary = edaRes_all_summary{iM};
@@ -230,16 +238,21 @@ for iM = 1:length(edaRes_all)
                      mean_CSplus_Block(ismember(uniq_Block, [31, 37, 42])), ...
                      'o', 'MarkerSize',13, 'MarkerEdgeColor', 'y')
         end
-        err1 = errorbar(uniq_Block, mean_CSminus_Block, sem_CSminus_Block, 'Color', c(1, :)); hold on
-        err2 = errorbar(uniq_Block, mean_CSplus_Block, sem_CSplus_Block, 'Color', c(2, :));
-        legend([err1, err2], {'CS-', 'CS+'}, 'Interpreter', 'none')    
+        err1 = errorbar(uniq_Block, mean_CSminus_Block, sem_CSminus_Block, ...
+            'Color', c(1, :), 'DisplayName', 'CS-'); hold on
+        err2 = errorbar(uniq_Block, mean_CSplus_Block, sem_CSplus_Block, ....
+            'Color', c(2, :), 'DisplayName', 'CS+');
+        legend([err1, err2]) 
         title(sprintf([uniq_Phase{i}, ' (n=%d)'], ...
             tb_eda_summary.max_GroupCount(strcmp(tb_eda_summary.Phase, uniq_Phase{i}))))
+        xlabel('log(SCR)')
+        ylabel('Block') 
     
     end
     
     sgtitle(['All subjects ', uniq_Measure{iM}], 'Interpreter', 'none')
     saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.pdf']))
+    saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.png']))
     saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.fig']))
 %     print(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.pdf']), '-bestfit')
 end
@@ -248,8 +261,14 @@ end
 close all
 c = colormap('lines');
 
-uniq_Measure = {'EyeC_Area_CSnorm', 'EyeC_Area_USnorm'};
+if ~exist('edaRes_all', 'var')
+    load(fp_workSpace)
+end
+
+uniq_Measure = {'SCR_CS', 'SCR_US'};
 for iM = 1:length(uniq_Measure)
+    tb_eda = edaRes_all{iM};
+
     uniq_Subject = unique(tb_eda.Subject);
     for s=1:length(uniq_Subject)
         tb_eda_CSplus = tb_eda(strcmp(tb_eda.CS, 'CSplus') & ...
@@ -303,16 +322,22 @@ for iM = 1:length(uniq_Measure)
                              mean_CSplus_Block(ismember(uniq_Block, [31, 37, 42])), ...
                              'o', 'MarkerSize',13, 'MarkerEdgeColor', 'y')
                 end
-                plt1 = plot(uniq_Block, mean_CSminus_Block, 'Marker', 'o', 'Color', c(1, :)); hold on
-                plt2 = plot(uniq_Block, mean_CSplus_Block, 'Marker', '*', 'Color', c(2, :));
+                plot(uniq_Block, mean_CSminus_Block, 'Marker', 'o', ...
+                    'Color', c(1, :), 'DisplayName', 'CS-'); hold on
+                plot(uniq_Block, mean_CSplus_Block, 'Marker', '*', ...
+                    'Color', c(2, :), 'DisplayName', 'CS-');
                 title(uniq_Phase{i})
-                legend([plt1, plt2], {'CS-', 'CS+'}, 'Interpreter', 'none')
+%                 legend([plt1, plt2], {'CS-', 'CS+'}, 'Interpreter', 'none')
+                xlabel('log(SCR)')
+                ylabel('Block')
+                legend show
             catch
             end
         end
         
         sgtitle([uniq_Subject{s}, ' ', uniq_Measure{iM}], 'Interpreter', 'none')
         saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.pdf']))
+        saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.png']))
         saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.fig']))
     end
 end
@@ -338,6 +363,61 @@ end
 % end
 % 
 % figure;
+
+%% Plot first extinction trial responses, separated for CS and subprotocol 
+if ~exist('edaRes_all', 'var')
+    load(fp_workSpace)
+end
+
+tb_eda = edaRes_all{1}; % CS response EDA table
+tb_eda_CSplus1Ext = tb_eda(strcmp(tb_eda.CS, 'CSplus') & ...
+                           tb_eda.Trial == 1 & ...
+                           strcmp(tb_eda.Phase, 'Extinction'), :);
+tb_eda_CSminus1Ext = tb_eda(strcmp(tb_eda.CS, 'CSminus') & ...
+                            tb_eda.Trial == 1 & ...
+                            strcmp(tb_eda.Phase, 'Extinction'), :);
+tb_eda_CSplus2Ext = tb_eda(strcmp(tb_eda.CS, 'CSplus') & ...
+                           tb_eda.Trial == 2 & ...
+                           strcmp(tb_eda.Phase, 'Extinction'), :);
+tb_eda_CSminus2Ext = tb_eda(strcmp(tb_eda.CS, 'CSminus') & ...
+                            tb_eda.Trial == 2 & ...
+                            strcmp(tb_eda.Phase, 'Extinction'), :);
+histBinWidth = 0.1;
+figure
+subplot(2,2,1)
+title('')
+histogram(tb_eda_CSplus1Ext.logEDA, 'BinWidth', histBinWidth, ...
+    DisplayName=['CS+_t-1 mean=', num2str(mean(tb_eda_CSplus1Ext.logEDA))])
+legend('Interpreter', 'none')
+title(['CS+_t-1 mean=', num2str(mean(tb_eda_CSplus1Ext.logEDA))], ...
+    'Interpreter', 'none')
+hold on
+subplot(2,2,2)
+histogram(tb_eda_CSminus1Ext.logEDA, 'BinWidth', histBinWidth, ...
+    DisplayName=['CS-_t-1 mean=', num2str(mean(tb_eda_CSminus1Ext.logEDA))])
+legend('Interpreter', 'none')
+title(['CS-_t-1 mean=', num2str(mean(tb_eda_CSminus1Ext.logEDA))], ...
+    'Interpreter', 'none')
+subplot(2,2,3)
+histogram(tb_eda_CSplus2Ext.logEDA, 'BinWidth', histBinWidth, ...
+    DisplayName=['CS+_t-2 mean=', num2str(mean(tb_eda_CSplus2Ext.logEDA))])
+legend('Interpreter', 'none')
+title(['CS+_t-2 mean=', num2str(mean(tb_eda_CSplus2Ext.logEDA))], ...
+    'Interpreter', 'none')
+subplot(2,2,4)
+histogram(tb_eda_CSminus2Ext.logEDA, 'BinWidth', histBinWidth, ...
+    DisplayName=['CS-_t-2 mean=', num2str(mean(tb_eda_CSminus2Ext.logEDA))])
+legend('Interpreter', 'none')
+title(['CS-_t-2 mean=', num2str(mean(tb_eda_CSminus2Ext.logEDA))], ...
+    'Interpreter', 'none')
+
+tb_eda_CSplus1Ext = tb_eda(strcmp(tb_eda.CS, 'CSplus') & ...
+                           ismember(tb_eda.Trial, [1, 2]) & ...
+                           strcmp(tb_eda.Phase, 'Extinction'), :);
+tb_eda_CSminus1Ext = tb_eda(strcmp(tb_eda.CS, 'CSminus') & ...
+                            ismember(tb_eda.Trial, [1, 2]) & ...
+                            strcmp(tb_eda.Phase, 'Extinction'), :);
+
 
 function [results,specialresults] = exportEDA2Excel(edaFile, timeStart, timeStop, width)
 % Use this function to export the computed EDA's to an Excel file. Only the

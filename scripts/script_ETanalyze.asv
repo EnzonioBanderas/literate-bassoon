@@ -65,11 +65,11 @@ for i = 1:length(fl_et)
     end
     
     % filter out USes
-%     data_ev = data_ev(~strcmp(data_ev.trial_type, 'US'), :);
+    % data_ev = data_ev(~strcmp(data_ev.trial_type, 'US'), :);
     
     % print out
-    fprintf(['run %d: fp_et = ', fp_et, '\n'], i)
-    fprintf(['run %d: fp_ev = ', fp_ev, '\n'], i)
+    fprintf('run %d: fp_et = %s\n', i, fp_et)
+    fprintf('run %d: fp_ev = %s\n', i, fp_ev)
     
     % calculate ellipse area for EyeA and EyeB
     data_et.EyeA_Area = pi*data_et.EyeA_PupilWidth.*data_et.EyeA_PupilHeight;
@@ -309,7 +309,7 @@ end
 % concatenate table for all ET files
 tb_et = vertcat(cl_et{:});
 
-% filter out US
+% filter out US (US reactions included in columns)
 tb_et = tb_et(~strcmp(tb_et.trial_type, 'US'), :);
 
 % filter out unknowns!
@@ -321,7 +321,7 @@ tb_et = tb_et(~((strcmp(tb_et.Subject, 'Z7T7161') | ...
                (~strcmp(tb_et.Phase, 'Habituation') & ...
                 ~strcmp(tb_et.Phase, 'Acquisition'))), :);
 
-% filter out specific trials
+% filter out (exclude) specific trials
 tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7179') & ...
                 strcmp(tb_et.Phase, 'Acquisition') & ...
                 tb_et.trial_index==32), :); % not a lot of data?
@@ -331,9 +331,17 @@ tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7179') & ...
 tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7161') & ...
                 strcmp(tb_et.Phase, 'Acquisition') & ...
                 tb_et.Block==16), :); % not a lot of data?
+tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7338') & ...
+                strcmp(tb_et.Phase, 'Volatile') & ...
+                tb_et.trial_index==7), :); % absurdly high values for both CS and US due to low baseline
+tb_et = tb_et(~(strcmp(tb_et.Subject, 'Z7T7297') & ...
+                strcmp(tb_et.Phase, 'Extinction') & ...
+                tb_et.trial_index==1), :); % high value but not unrealistically high, noisy baseline?
 
 % write to output .tsv
 % essbids_writeTsv()
+fp_workSpace = fullfile(fp_de, 'script_ETanalyze.mat');
+save(fullfile(fp_de, 'script_ETanalyze.mat'))
 writetable(tb_et, fullfile(fp_de, 'eyetrack_preliminary_analysis_chosen.xlsx'));
 tb_et_new = groupsummary(tb_et, {'Phase', 'Block', 'trial_type'}, 'nnz', 'trial_index');
 tb_et_summary = groupsummary(tb_et_new, 'Phase', 'max', 'GroupCount');
@@ -342,6 +350,12 @@ tb_et_summary = groupsummary(tb_et_new, 'Phase', 'max', 'GroupCount');
 %% plot errorbar all subs
 close all
 c = colormap('lines');
+
+if ~exist('tb_et', 'var')
+    script_init_study7
+    fp_workSpace = fullfile(fp_de, 'script_ETanalyze.mat');
+    load(fp_workSpace)
+end
 
 uniq_Measure = {'EyeC_Area_CSnorm', 'EyeC_Area_USnorm'};
 for iM = 1:length(uniq_Measure)
@@ -410,13 +424,18 @@ for iM = 1:length(uniq_Measure)
     
     sgtitle(['All subjects ', uniq_Measure{iM}], 'Interpreter', 'none')
     saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.pdf']))
+    saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.png']))
     saveas(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.fig']))
 %     print(gcf, fullfile(fp_fig, ['AllSubjects_', uniq_Measure{iM}, '.pdf']), '-bestfit')
 end
 
-%% plot errorbar
+%% plot errorbar persub
 close all
 c = colormap('lines');
+
+if ~exist('tb_et', 'var')
+    load(fp_worksSpace)
+end
 
 uniq_Measure = {'EyeC_Area_CSnorm', 'EyeC_Area_USnorm'};
 for iM = 1:length(uniq_Measure)
@@ -474,19 +493,34 @@ for iM = 1:length(uniq_Measure)
                              mean_CSplus_Block(ismember(uniq_Block, [31, 37, 42])), ...
                              'o', 'MarkerSize',13, 'MarkerEdgeColor', 'y')
                 end
-                plt1 = plot(uniq_Block, mean_CSminus_Block, 'Marker', 'o', 'Color', c(CSminus_color, :)); hold on
-                plt2 = plot(uniq_Block, mean_CSplus_Block, 'Marker', '*', 'Color', c(CSplus_color, :));
-                legend([plt1, plt2], {'CS-', 'CS+'}, 'Interpreter', 'none')
+                plot(uniq_Block, mean_CSminus_Block, 'Marker', 'o', ...
+                    'Color', c(CSminus_color, :), 'DisplayName', 'CS-'); hold on
+                plot(uniq_Block, mean_CSplus_Block, 'Marker', '*', ...
+                    'Color', c(CSplus_color, :), 'DisplayName', 'CS+');
+                legend('Interpreter', 'none')
                 title(sprintf([uniq_Phase{i}], ...
                     tb_et_summary.max_GroupCount(strcmp(tb_et_summary.Phase, uniq_Phase{i}))))
                 xlabel('Trial number')
-                ylabel('CS response ratio (AU)')
+                ylabel('CS response ratio')
             catch
             end
         end
         
         sgtitle([uniq_Subject{s}, ' ', uniq_Measure{iM}], 'Interpreter', 'none')
         saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.pdf']))
+        saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.png']))
         saveas(gcf, fullfile(fp_fig, [uniq_Subject{s}, '_', uniq_Measure{iM}, '.fig']))
     end
 end
+
+%% ET first extinction
+tb = tb_et((strcmp(tb_et.Phase, 'Extinction') & ...
+                   tb_et.Block==1), :);
+tb_CSplus = tb(strcmp(tb.trial_type, 'CSplus'), :);
+tb_CSminus = tb(strcmp(tb.trial_type, 'CSminus'), :);
+figure
+histogram(tb_CSplus.EyeC_Area_CSnorm, 'BinWidth', 0.1, 'DisplayName', 'CS+'), hold on
+histogram(tb_CSminus.EyeC_Area_CSnorm, 'BinWidth', 0.1, 'DisplayName', 'CS-')
+legend show
+
+tb_CSminus(tb_CSminus.EyeC_Area_CSnorm > 2, :)
